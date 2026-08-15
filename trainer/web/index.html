@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>DSA Trainer</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/dist/xterm.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <button id="home-button" class="brand" type="button">DSA/TRAINER</button>
+        <div id="timer" class="timer hidden">00:00</div>
+      </header>
+
+      <section id="dashboard-view">
+        <p id="status" class="eyebrow">Loading topics…</p>
+        <h1>Build it from memory.</h1>
+        <div id="catalog"></div>
+      </section>
+
+      <section id="practice-view" class="hidden">
+        <div class="practice-heading">
+          <div>
+            <p id="topic-category" class="eyebrow"></p>
+            <h1 id="topic-name"></h1>
+          </div>
+          <div class="actions">
+            <button id="start-button" type="button">Start</button>
+            <button id="run-button" type="button" disabled>Run tests</button>
+            <button id="submit-button" class="primary" type="button" disabled>Submit</button>
+            <button id="reveal-button" class="help-action hidden" type="button" disabled>Hint / answer after 15:00</button>
+            <button id="cancel-button" class="danger" type="button" disabled>Cancel</button>
+          </div>
+        </div>
+
+        <div class="practice-grid">
+          <aside class="prompt-panel">
+            <article id="topic-prompt" class="markdown-body"></article>
+          </aside>
+          <div class="terminal-panel">
+            <div id="terminal"></div>
+            <div id="terminal-overlay" class="terminal-overlay">
+              Press Start to open Neovim.
+            </div>
+          </div>
+        </div>
+
+        <section class="results-panel">
+          <div class="results-heading">
+            <h2>Results</h2>
+            <span id="result-badge"></span>
+          </div>
+          <div id="test-summary" class="test-summary hidden"></div>
+          <pre id="test-output">No test run yet.</pre>
+        </section>
+
+        <section id="help-panel" class="help-panel hidden">
+          <div class="results-heading">
+            <h2>Help</h2>
+            <button id="answer-button" class="history-load hidden" type="button">Reveal implementation</button>
+          </div>
+          <p id="hint-text" class="hint-text"></p>
+          <pre id="reference-code" class="reference-code hidden"></pre>
+        </section>
+
+        <section class="history-panel">
+          <div class="history-heading">
+            <h2>Attempt history</h2>
+            <span id="history-summary"></span>
+          </div>
+          <div id="history-list" class="history-list"></div>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="/dist/app.js"></script>
+  </body>
+</html>

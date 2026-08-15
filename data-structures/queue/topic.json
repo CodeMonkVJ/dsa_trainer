@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Queue",
+  "description": "Implement a FIFO queue with constant-time enqueue and dequeue operations.",
+  "difficulty": "basic",
+  "languages": ["cpp"],
+  "target_seconds": 300,
+  "warning_seconds": 450,
+  "tags": ["queue", "linked-list", "fifo"]
+}

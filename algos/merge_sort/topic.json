@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Merge Sort",
+  "description": "Sort an array with divide-and-conquer merging in predictable O(n log n) time.",
+  "difficulty": "basic",
+  "languages": ["cpp"],
+  "target_seconds": 300,
+  "warning_seconds": 450,
+  "tags": ["sorting", "divide-and-conquer", "array"]
+}

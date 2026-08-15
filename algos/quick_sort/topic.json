@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Quick Sort",
+  "description": "Sort an array using partitioning around a pivot.",
+  "difficulty": "basic",
+  "languages": ["cpp"],
+  "target_seconds": 300,
+  "warning_seconds": 450,
+  "tags": ["sorting", "divide-and-conquer", "partition"]
+}

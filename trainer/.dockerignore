@@ -1,0 +1,8 @@
+.git
+.gitignore
+.zig-cache
+zig-out
+node_modules
+state
+web/dist
+*.log

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Kadane's Maximum Subarray",
+  "description": "Find the contiguous subarray with the largest sum and return its boundaries.",
+  "difficulty": "basic",
+  "languages": ["cpp"],
+  "target_seconds": 300,
+  "warning_seconds": 450,
+  "tags": ["array", "dynamic-programming", "greedy"]
+}

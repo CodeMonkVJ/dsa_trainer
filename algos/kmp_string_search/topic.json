@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "KMP String Search",
+  "description": "Find every occurrence of a pattern in a text using a prefix table.",
+  "difficulty": "intermediate",
+  "languages": ["cpp"],
+  "target_seconds": 450,
+  "warning_seconds": 700,
+  "tags": ["strings", "pattern-matching", "prefix-function"]
+}
