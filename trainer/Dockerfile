@@ -34,8 +34,25 @@ RUN zig build -Doptimize=ReleaseSafe
 FROM debian:bookworm-slim AS runtime
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates g++ neovim tmux \
+    && apt-get install -y --no-install-recommends \
+       ca-certificates curl git g++ clangd clang-format ripgrep fd-find tmux unzip \
     && rm -rf /var/lib/apt/lists/*
+
+ARG TARGETARCH
+ARG NVIM_VERSION=v0.11.3
+
+RUN case "${TARGETARCH}" in \
+      amd64) nvim_arch="x86_64" ;; \
+      arm64) nvim_arch="arm64" ;; \
+      *) echo "Unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac \
+    && curl -fsSL \
+       "https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux-${nvim_arch}.tar.gz" \
+       -o /tmp/nvim.tar.gz \
+    && tar -xzf /tmp/nvim.tar.gz -C /opt \
+    && ln -s "/opt/nvim-linux-${nvim_arch}/bin/nvim" /usr/local/bin/nvim \
+    && rm /tmp/nvim.tar.gz
+
 
 WORKDIR /opt/dsa-trainer
 COPY --from=zig-build /build/zig-out/bin/dsa-trainer ./bin/dsa-trainer
@@ -43,8 +60,14 @@ COPY --from=web-build /build/web/index.html ./web/index.html
 COPY --from=web-build /build/web/styles.css ./web/styles.css
 COPY --from=web-build /build/web/dist ./web/dist
 COPY nvim ./nvim
+COPY nvim-config ./nvim-config
 COPY docker/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
+
+ENV XDG_CONFIG_HOME=/opt/dsa-trainer/nvim-config \
+    XDG_DATA_HOME=/opt/dsa-trainer/nvim-data
+
+RUN nvim --headless "+Lazy! sync" +qa
 
 ENV DSA_ROOT=/workspace \
     PORT=8080 \

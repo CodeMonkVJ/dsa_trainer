@@ -153,6 +153,10 @@ fn createSession(
     defer allocator.free(attempt_path);
     const guard_path = try std.fs.path.join(allocator, &.{ trainer_path, "nvim", "guard.lua" });
     defer allocator.free(guard_path);
+    const config_path = try std.fs.path.join(allocator, &.{ trainer_path, "nvim-config" });
+    defer allocator.free(config_path);
+    const data_path = try std.fs.path.join(allocator, &.{ trainer_path, "nvim-data" });
+    defer allocator.free(data_path);
     const columns_text = try std.fmt.allocPrint(allocator, "{d}", .{columns});
     defer allocator.free(columns_text);
     const rows_text = try std.fmt.allocPrint(allocator, "{d}", .{rows});
@@ -162,6 +166,10 @@ fn createSession(
     defer command.deinit();
     try command.writer.writeAll("exec env DSA_ATTEMPT_FILE=");
     try shellQuote(&command.writer, attempt_path);
+    try command.writer.writeAll(" XDG_CONFIG_HOME=");
+    try shellQuote(&command.writer, config_path);
+    try command.writer.writeAll(" XDG_DATA_HOME=");
+    try shellQuote(&command.writer, data_path);
     try command.writer.writeAll(" nvim -c ");
     const guard_command = try std.fmt.allocPrint(allocator, "luafile {s}", .{guard_path});
     defer allocator.free(guard_command);
