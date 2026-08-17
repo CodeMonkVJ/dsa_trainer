@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Majority Elements (n/3)",
+  "description": "Return every value that appears more than one third of the time.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 450,
+  "red_seconds": 600,
+  "tags": ["array", "boyer-moore", "voting"]
+}

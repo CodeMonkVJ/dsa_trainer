@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Majority Element (n/2)",
+  "description": "Find the value that appears more than half the time in an array.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 180,
+  "yellow_seconds": 300,
+  "red_seconds": 420,
+  "tags": ["array", "boyer-moore", "voting"]
+}
