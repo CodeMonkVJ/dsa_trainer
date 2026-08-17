@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Find Duplicate",
+  "description": "Find the one repeated value in an array without modifying its input.",
+  "difficulty": "intermediate",
+  "languages": ["cpp"],
+  "green_seconds": 450,
+  "yellow_seconds": 700,
+  "red_seconds": 900,
+  "tags": ["arrays", "cycle-detection", "pigeonhole-principle"]
+}

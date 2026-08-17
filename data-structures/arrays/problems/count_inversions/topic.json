@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Count Inversions",
+  "description": "Count out-of-order pairs in an integer array efficiently.",
+  "difficulty": "advanced",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 900,
+  "red_seconds": 1200,
+  "tags": ["arrays", "merge-sort", "divide-and-conquer"]
+}

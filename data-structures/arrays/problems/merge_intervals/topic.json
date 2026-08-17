@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Merge Intervals",
+  "description": "Combine overlapping closed intervals into a sorted, non-overlapping list.",
+  "difficulty": "intermediate",
+  "languages": ["cpp"],
+  "green_seconds": 450,
+  "yellow_seconds": 700,
+  "red_seconds": 900,
+  "tags": ["arrays", "sorting", "intervals"]
+}

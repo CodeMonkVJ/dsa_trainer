@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Repeating and Missing",
+  "description": "Identify the repeated and absent values from a 1-to-n array.",
+  "difficulty": "intermediate",
+  "languages": ["cpp"],
+  "green_seconds": 450,
+  "yellow_seconds": 700,
+  "red_seconds": 900,
+  "tags": ["arrays", "math", "missing-number"]
+}
