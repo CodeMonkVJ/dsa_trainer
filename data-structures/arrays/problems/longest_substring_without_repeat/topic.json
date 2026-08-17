@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Longest Substring Without Repeating Characters",
+  "description": "Find the length of the longest substring with no repeated characters.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 450,
+  "yellow_seconds": 675,
+  "red_seconds": 675,
+  "tags": ["array", "string", "sliding-window"]
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Longest Consecutive Sequence",
+  "description": "Find the length of the longest run of consecutive integer values.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 450,
+  "yellow_seconds": 675,
+  "red_seconds": 675,
+  "tags": ["array", "hash-table"]
+}

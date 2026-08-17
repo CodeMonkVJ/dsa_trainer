@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Two Sum",
+  "description": "Find two distinct array positions whose values add to a target.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 450,
+  "red_seconds": 450,
+  "tags": ["array", "hash-table"]
+}

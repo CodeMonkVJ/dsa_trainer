@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Remove Duplicates From Sorted Array",
+  "description": "Compact a sorted array in place so each value appears once.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 450,
+  "red_seconds": 450,
+  "tags": ["array", "two-pointers", "in-place"]
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Largest Subarray With Zero Sum",
+  "description": "Find the maximum length of a contiguous subarray whose sum is zero.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 450,
+  "yellow_seconds": 675,
+  "red_seconds": 675,
+  "tags": ["array", "prefix-sum", "hash-table"]
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Four Sum",
+  "description": "Find all unique quadruplets whose values add to a target.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 900,
+  "red_seconds": 900,
+  "tags": ["array", "sorting", "two-pointers"]
+}
