@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Sort 0s, 1s and 2s",
+  "description": "Sort an array containing only 0, 1, and 2 in a single pass.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 450,
+  "red_seconds": 600,
+  "tags": ["array", "three-way-partition", "in-place"]
+}

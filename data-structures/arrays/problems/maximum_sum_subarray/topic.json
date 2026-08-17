@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Maximum Sum Subarray",
+  "description": "Find the largest sum of a contiguous subarray.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 240,
+  "yellow_seconds": 360,
+  "red_seconds": 480,
+  "tags": ["array", "kadane", "subarray"]
+}

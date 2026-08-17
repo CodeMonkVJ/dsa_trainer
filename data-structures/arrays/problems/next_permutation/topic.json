@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Next Permutation",
+  "description": "Transform a sequence into its next lexicographically greater permutation.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 450,
+  "red_seconds": 600,
+  "tags": ["array", "permutation", "in-place"]
+}

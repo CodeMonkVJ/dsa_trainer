@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Set Matrix Zeros",
+  "description": "Set every row and column to zero when a matrix cell is zero, in place.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 450,
+  "red_seconds": 600,
+  "tags": ["array", "matrix", "in-place"]
+}

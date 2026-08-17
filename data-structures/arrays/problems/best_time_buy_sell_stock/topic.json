@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "name": "Best Time to Buy and Sell Stock",
+  "description": "Find the greatest profit from one buy followed by one sell.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 240,
+  "yellow_seconds": 360,
+  "red_seconds": 480,
+  "tags": ["array", "greedy", "stock"]
+}
