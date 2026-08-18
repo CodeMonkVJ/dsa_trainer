@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Children Sum Property",
+  "description": "Convert a binary tree so every non-leaf node equals the sum of its children without decreasing node values.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-tree", "tree-transformation"]
+}

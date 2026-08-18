@@ -14,6 +14,10 @@ pub fn build(b: *std.Build) void {
     const exe = b.addExecutable(.{
         .name = "dsa-trainer",
         .root_module = root_module,
+        // GCC 16 emits .sframe relocations that Zig 0.16's default linker
+        // cannot currently handle. Use the system linker for libc startup
+        // objects while keeping Zig as the compiler.
+        .use_lld = false,
     });
     b.installArtifact(exe);
 

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Minimum Spanning Tree using Prim","description":"Return the weight of a minimum spanning tree using Prim's algorithm.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","prim_mst"]}

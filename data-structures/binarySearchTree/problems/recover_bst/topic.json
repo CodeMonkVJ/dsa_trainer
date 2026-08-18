@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Recover BST",
+  "description": "Restore a BST in which exactly two node values were swapped.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-search-tree", "inorder", "morris"]
+}

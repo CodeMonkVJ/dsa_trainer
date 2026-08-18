@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Power Set","description":"Generate all distinct subsequences of a string in lexicographic order.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["trie","power_set"]}

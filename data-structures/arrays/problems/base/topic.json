@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Dynamic Array",
+  "description": "Implement a growable array with append, indexed access, pop, and clear operations.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 600,
+  "tags": ["array", "dynamic-memory", "amortized-analysis"]
+}

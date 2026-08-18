@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Sort a Stack",
+  "description": "Sort a stack using stack operations so the smallest value is on top.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["stack", "recursion", "sorting"]
+}

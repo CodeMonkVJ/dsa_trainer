@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Next Smaller Element",
+  "description": "Find the first element to the right of each array value that is strictly smaller.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["stack", "monotonic-stack", "array"]
+}

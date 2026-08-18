@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "K Most Frequent Elements",
+  "description": "Return the k values that occur most often in an integer array.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["heap", "priority-queue", "hash-map", "frequency"]
+}

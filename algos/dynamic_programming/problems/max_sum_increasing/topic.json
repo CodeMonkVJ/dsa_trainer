@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Maximum Sum Increasing Subsequence","description":"Return the maximum sum of a strictly increasing subsequence.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","max_sum_increasing"]}

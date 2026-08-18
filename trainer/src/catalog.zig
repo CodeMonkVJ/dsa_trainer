@@ -7,8 +7,8 @@ pub const TopicMetadata = struct {
     description: []const u8,
     difficulty: []const u8,
     languages: []const []const u8,
-    target_seconds: u32,
-    warning_seconds: u32,
+    green_seconds: u32,
+    yellow_seconds: u32,
     tags: []const []const u8,
 };
 
@@ -72,6 +72,7 @@ fn writeCategory(
     var iterator = category_dir.iterate();
     while (try iterator.next(io)) |entry| {
         if (entry.kind != .directory or !validId(entry.name)) continue;
+        if (std.mem.eql(u8, id, "data-structures") and std.mem.eql(u8, entry.name, "treeMisc")) continue;
         try writeTopic(allocator, io, category_dir, id, entry.name, json);
     }
 
@@ -87,11 +88,14 @@ fn writeTopic(
     topic_id: []const u8,
     json: *std.json.Stringify,
 ) !void {
-    const metadata_path = try std.fs.path.join(allocator, &.{ topic_id, "topic.json" });
+    const metadata_path = try std.fs.path.join(allocator, &.{ topic_id, "problems", "base", "topic.json" });
     defer allocator.free(metadata_path);
-    const bytes = category_dir.readFileAlloc(io, metadata_path, allocator, .limited(128 * 1024)) catch |err| {
-        try writeInvalidTopic(json, category_id, topic_id, @errorName(err));
-        return;
+    const bytes = category_dir.readFileAlloc(io, metadata_path, allocator, .limited(128 * 1024)) catch |err| switch (err) {
+        error.FileNotFound => return,
+        else => {
+            try writeInvalidTopic(json, category_id, topic_id, @errorName(err));
+            return;
+        },
     };
     defer allocator.free(bytes);
 
@@ -102,13 +106,13 @@ fn writeTopic(
     defer parsed.deinit();
     const metadata = parsed.value;
 
-    if (metadata.schema_version != 1 or metadata.target_seconds > metadata.warning_seconds) {
+    if (metadata.schema_version != 1 or metadata.green_seconds > metadata.yellow_seconds) {
         try writeInvalidTopic(json, category_id, topic_id, "invalid_metadata");
         return;
     }
 
     var status: []const u8 = "gray";
-    const summary_path = try std.fs.path.join(allocator, &.{ topic_id, "progress", "summary.json" });
+    const summary_path = try std.fs.path.join(allocator, &.{ topic_id, "problems", "base", "progress", "summary.json" });
     defer allocator.free(summary_path);
     if (category_dir.readFileAlloc(io, summary_path, allocator, .limited(128 * 1024))) |summary_bytes| {
         defer allocator.free(summary_bytes);
@@ -130,11 +134,15 @@ fn writeTopic(
                 summary.value.runtime_ms,
                 summary.value.peak_memory_bytes,
                 summary.value.passed,
+                allocator,
+                io,
+                category_dir,
+                topic_id,
             );
             return;
         } else |_| {}
     } else |_| {}
-    try writeValidTopic(json, topic_id, category_id, metadata, status, null, null, null, null);
+    try writeValidTopic(json, topic_id, category_id, metadata, status, null, null, null, null, allocator, io, category_dir, topic_id);
 }
 
 fn writeValidTopic(
@@ -147,6 +155,10 @@ fn writeValidTopic(
     runtime_ms: ?i64,
     peak_memory_bytes: ?u64,
     passed: ?bool,
+    allocator: std.mem.Allocator,
+    io: Io,
+    category_dir: Io.Dir,
+    group_id: []const u8,
 ) !void {
     try json.beginObject();
     try json.objectField("id");
@@ -154,7 +166,25 @@ fn writeValidTopic(
     try json.objectField("category");
     try json.write(category_id);
     try json.objectField("name");
-    try json.write(metadata.name);
+    if (std.mem.eql(u8, group_id, "greedy")) {
+        try json.write("Greedy");
+    } else if (std.mem.eql(u8, group_id, "recursion")) {
+        try json.write("Recursion and Backtracking");
+    } else if (std.mem.eql(u8, group_id, "stackQueue")) {
+        try json.write("Stack and Queue");
+    } else if (std.mem.eql(u8, group_id, "strings")) {
+        try json.write("Strings");
+    } else if (std.mem.eql(u8, group_id, "binaryTree")) {
+        try json.write("Binary Tree");
+    } else if (std.mem.eql(u8, group_id, "graphs")) {
+        try json.write("Graphs");
+    } else if (std.mem.eql(u8, group_id, "dynamic_programming")) {
+        try json.write("Dynamic Programming");
+    } else if (std.mem.eql(u8, group_id, "linkedList")) {
+        try json.write("Linked Lists");
+    } else {
+        try json.write(metadata.name);
+    }
     try json.objectField("description");
     try json.write(metadata.description);
     try json.objectField("difficulty");
@@ -162,11 +192,47 @@ fn writeValidTopic(
     try json.objectField("languages");
     try json.write(metadata.languages);
     try json.objectField("target_seconds");
-    try json.write(metadata.target_seconds);
+    try json.write(metadata.green_seconds);
     try json.objectField("warning_seconds");
-    try json.write(metadata.warning_seconds);
+    try json.write(metadata.yellow_seconds);
+    try json.objectField("green_seconds");
+    try json.write(metadata.green_seconds);
+    try json.objectField("yellow_seconds");
+    try json.write(metadata.yellow_seconds);
     try json.objectField("tags");
     try json.write(metadata.tags);
+    try json.objectField("problems");
+    try json.beginArray();
+    try json.beginObject();
+    try json.objectField("id");
+    try json.write("base");
+    try json.objectField("name");
+    try json.write("Base implementation");
+    try json.objectField("description");
+    try json.write(metadata.description);
+    try json.objectField("difficulty");
+    try json.write(metadata.difficulty);
+    try json.endObject();
+    const problems_path = try std.fs.path.join(allocator, &.{ group_id, "problems" });
+    defer allocator.free(problems_path);
+    var problems_dir = category_dir.openDir(io, problems_path, .{ .iterate = true }) catch {
+        try json.endArray();
+        try json.endObject();
+        return;
+    };
+    defer problems_dir.close(io);
+    var iterator = problems_dir.iterate();
+    while (try iterator.next(io)) |entry| {
+        if (entry.kind != .directory or !validId(entry.name) or std.mem.eql(u8, entry.name, "base")) continue;
+        if (std.mem.eql(u8, group_id, "dynamic_programming") and
+            (std.mem.eql(u8, entry.name, "distinct_subsequences") or
+                std.mem.eql(u8, entry.name, "partition_equal") or
+                std.mem.eql(u8, entry.name, "stock_buy_sell") or
+                std.mem.eql(u8, entry.name, "wildcard_matching"))) continue;
+        if (std.mem.eql(u8, group_id, "trie") and std.mem.eql(u8, entry.name, "word_break")) continue;
+        try writeProblemRef(allocator, io, problems_dir, entry.name, json);
+    }
+    try json.endArray();
     try json.objectField("status");
     try json.write(status);
     try json.objectField("elapsed_ms");
@@ -177,6 +243,31 @@ fn writeValidTopic(
     try json.write(peak_memory_bytes);
     try json.objectField("passed");
     try json.write(passed);
+    try json.endObject();
+}
+
+fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, problem_id: []const u8, json: *std.json.Stringify) !void {
+    const metadata_path = try std.fs.path.join(allocator, &.{ problem_id, "topic.json" });
+    defer allocator.free(metadata_path);
+    const bytes = problems_dir.readFileAlloc(io, metadata_path, allocator, .limited(128 * 1024)) catch return;
+    defer allocator.free(bytes);
+    var parsed = std.json.parseFromSlice(TopicMetadata, allocator, bytes, .{}) catch return;
+    defer parsed.deinit();
+    const metadata = parsed.value;
+    if (metadata.schema_version != 1 or metadata.green_seconds > metadata.yellow_seconds) return;
+    try json.beginObject();
+    try json.objectField("id");
+    try json.write(problem_id);
+    try json.objectField("name");
+    try json.write(metadata.name);
+    try json.objectField("description");
+    try json.write(metadata.description);
+    try json.objectField("difficulty");
+    try json.write(metadata.difficulty);
+    try json.objectField("green_seconds");
+    try json.write(metadata.green_seconds);
+    try json.objectField("yellow_seconds");
+    try json.write(metadata.yellow_seconds);
     try json.endObject();
 }
 

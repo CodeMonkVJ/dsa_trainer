@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Aggressive Cows",
+  "description": "Place cows in stalls so that the minimum distance between any two cows is as large as possible.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-search", "greedy", "sorting"]
+}

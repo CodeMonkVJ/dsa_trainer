@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Right and Left View of Binary Tree",
+  "description": "Return the visible node at each level from the right and left sides.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-tree", "bfs", "view"]
+}

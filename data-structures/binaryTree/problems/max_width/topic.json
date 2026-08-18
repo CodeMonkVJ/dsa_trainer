@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Maximum Width of Binary Tree",
+  "description": "Find the maximum number of positions occupied by a binary tree at any level, including gaps between nodes.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-tree", "breadth-first-search"]
+}

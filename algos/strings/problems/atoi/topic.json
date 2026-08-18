@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "String to Integer (atoi)",
+  "description": "Convert a string to a signed 32-bit integer with whitespace, sign, suffix, and overflow handling.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["strings", "parsing", "overflow"]
+}

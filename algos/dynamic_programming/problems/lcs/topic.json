@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Longest Common Subsequence","description":"Return the length of the longest common subsequence of two strings.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","lcs"]}

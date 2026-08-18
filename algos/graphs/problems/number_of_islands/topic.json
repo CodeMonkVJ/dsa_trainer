@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Number of Islands","description":"Count four-directionally connected land components in a binary grid.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","number_of_islands"]}

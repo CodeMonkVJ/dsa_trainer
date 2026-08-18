@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"K-th Largest Element in a Stream","description":"Return the kth-largest value after each insertion into a stream.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["heaps","stream","order-statistics"]}

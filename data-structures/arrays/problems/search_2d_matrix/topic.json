@@ -4,8 +4,7 @@
   "description": "Search for a target in a row-wise sorted matrix whose rows are ordered end to end.",
   "difficulty": "medium",
   "languages": ["cpp"],
-  "green_seconds": 300,
-  "yellow_seconds": 450,
-  "red_seconds": 600,
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
   "tags": ["array", "matrix", "binary-search"]
 }

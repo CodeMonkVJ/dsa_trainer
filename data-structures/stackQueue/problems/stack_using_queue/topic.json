@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Stack Using Queue",
+  "description": "Implement a LIFO stack using one or more FIFO queues.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["stack", "queue", "design"]
+}

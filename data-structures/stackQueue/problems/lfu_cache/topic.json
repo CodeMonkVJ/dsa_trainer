@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "LFU Cache",
+  "description": "Design a fixed-capacity cache that evicts the least frequently used key, breaking ties by recency, with constant-time operations.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["cache", "hash-map", "frequency", "design"]
+}

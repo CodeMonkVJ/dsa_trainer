@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Construct BST from Keys",
+  "description": "Build a height-balanced binary search tree from sorted unique keys.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-search-tree", "construction", "divide-and-conquer"]
+}

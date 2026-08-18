@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Iterative Preorder Traversal","description":"Return root-left-right values using an explicit stack.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["tree","binary-tree","traversal","stack"]}

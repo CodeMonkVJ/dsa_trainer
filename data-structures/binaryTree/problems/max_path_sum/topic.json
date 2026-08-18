@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Maximum Path Sum",
+  "description": "Find the maximum sum of values along any path in a binary tree.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-tree", "dfs", "dynamic-programming"]
+}

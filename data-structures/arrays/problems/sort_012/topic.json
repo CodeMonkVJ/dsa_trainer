@@ -4,8 +4,7 @@
   "description": "Sort an array containing only 0, 1, and 2 in a single pass.",
   "difficulty": "medium",
   "languages": ["cpp"],
-  "green_seconds": 300,
-  "yellow_seconds": 450,
-  "red_seconds": 600,
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
   "tags": ["array", "three-way-partition", "in-place"]
 }

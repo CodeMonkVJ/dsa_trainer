@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Binary Tree to Doubly Linked List","description":"Convert a binary tree to an in-order doubly linked list in place.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["binary-tree","linked-list","inorder"]}

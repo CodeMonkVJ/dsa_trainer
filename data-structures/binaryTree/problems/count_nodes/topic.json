@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Count Nodes in a Complete Binary Tree",
+  "description": "Count nodes in a complete binary tree efficiently using its complete-tree structure.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-tree", "complete-tree", "binary-search"]
+}

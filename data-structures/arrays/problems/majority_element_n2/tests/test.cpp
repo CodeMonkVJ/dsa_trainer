@@ -5,17 +5,29 @@ using namespace std;
 #undef main
 
 int passed = 0, total = 0;
-void check(bool ok, const char* name) {
+void check(const vector<int> &values, int expected, const char *name) {
+  const int actual = majorityElement(values);
   ++total;
-  if (ok) ++passed;
+  cout << "DSA_CASE {\"input\":{\"values\":[";
+  for (size_t i = 0; i < values.size(); ++i) {
+    if (i)
+      cout << ',';
+    cout << values[i];
+  }
+  cout << "]},\"expected\":" << expected << ",\"actual\":" << actual
+       << ",\"passed\":" << (actual == expected ? "true" : "false") << "}\n";
+  const bool ok = actual == expected;
+  if (ok)
+    ++passed;
   cout << (ok ? "PASS " : "FAIL ") << name << '\n';
 }
 
 int main() {
-  check(majorityElement({2, 2, 1, 1, 1, 2, 2}) == 2, "finds a majority after cancellations");
-  check(majorityElement({3}) == 3, "handles a single element");
-  check(majorityElement({-1, -1, -1, 2, 2}) == -1, "handles negative values");
-  check(majorityElement({7, 7, 7, 7}) == 7, "handles an all-equal array");
-  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total << "}\n";
+  check({2, 2, 1, 1, 1, 2, 2}, 2, "finds a majority after cancellations");
+  check({3}, 3, "handles a single element");
+  check({-1, -1, -1, 2, 2}, -1, "handles negative values");
+  check({7, 7, 7, 7}, 7, "handles an all-equal array");
+  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total
+       << "}\n";
   return passed == total ? 0 : 1;
 }

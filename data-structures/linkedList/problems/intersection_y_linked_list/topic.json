@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Intersection of Two Linked Lists",
+  "description": "Find the first node shared by two singly linked lists, if their paths form a Y.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "two-pointers", "pointers"]
+}

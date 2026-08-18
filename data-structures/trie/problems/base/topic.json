@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Trie",
+  "description": "Implement a lowercase prefix tree with insertion, exact lookup, and prefix lookup.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["trie", "strings", "prefix"]
+}

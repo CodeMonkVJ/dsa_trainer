@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Longest Common Prefix",
+  "description": "Find the longest string prefix shared by every string in a collection.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["strings", "prefix", "arrays"]
+}

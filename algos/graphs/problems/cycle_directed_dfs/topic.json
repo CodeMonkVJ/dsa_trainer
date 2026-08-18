@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Detect Cycle in a Directed Graph using DFS","description":"Detect directed cycles using DFS recursion-stack tracking.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","cycle_directed_dfs"]}

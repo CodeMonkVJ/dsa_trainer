@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Reverse Words in a String",
+  "description": "Reverse the order of words in a string while normalizing whitespace.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["strings", "parsing", "two-pointers"]
+}

@@ -24,18 +24,22 @@
         <div class="practice-heading">
           <div>
             <p id="topic-category" class="eyebrow"></p>
-            <h1 id="topic-name"></h1>
+            <h1><span id="topic-name"></span> <span id="topic-difficulty" class="difficulty-badge"></span></h1>
           </div>
           <div class="actions">
             <button id="start-button" type="button">Start</button>
             <button id="run-button" type="button" disabled>Run tests</button>
             <button id="submit-button" class="primary" type="button" disabled>Submit</button>
-            <button id="reveal-button" class="help-action hidden" type="button" disabled>Hint / answer after 15:00</button>
+            <button id="reveal-button" class="help-action hidden" type="button" disabled>Show hint</button>
             <button id="cancel-button" class="danger" type="button" disabled>Cancel</button>
           </div>
         </div>
 
         <div class="practice-grid">
+          <section class="problem-picker-panel">
+            <p class="eyebrow">Problems in this topic</p>
+            <div id="problem-picker" class="problem-picker"></div>
+          </section>
           <aside class="prompt-panel">
             <article id="topic-prompt" class="markdown-body"></article>
           </aside>
@@ -53,6 +57,37 @@
             <span id="result-badge"></span>
           </div>
           <div id="test-summary" class="test-summary hidden"></div>
+          <section id="test-case-viewer" class="test-case-viewer hidden" aria-label="Test cases">
+            <div class="test-case-heading">
+              <div>
+                <p class="eyebrow">Test case walkthrough</p>
+                <strong id="test-case-title"></strong>
+              </div>
+              <span id="test-case-position" class="test-case-position"></span>
+            </div>
+            <div class="test-case-card">
+              <span id="test-case-status" class="test-case-status"></span>
+              <div class="test-case-values">
+                <div class="test-case-value">
+                  <span>Input</span>
+                  <pre id="test-case-input"></pre>
+                </div>
+                <div class="test-case-value">
+                  <span>Expected</span>
+                  <pre id="test-case-expected"></pre>
+                </div>
+                <div class="test-case-value">
+                  <span>Actual</span>
+                  <pre id="test-case-actual"></pre>
+                </div>
+                <p id="test-case-details" class="test-case-details"></p>
+              </div>
+            </div>
+            <div class="test-case-controls">
+              <button id="test-case-prev" class="history-load" type="button">← Previous</button>
+              <button id="test-case-next" class="history-load" type="button">Next →</button>
+            </div>
+          </section>
           <pre id="test-output">No test run yet.</pre>
         </section>
 

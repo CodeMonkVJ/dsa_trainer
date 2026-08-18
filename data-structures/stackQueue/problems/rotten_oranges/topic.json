@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Rotten Oranges",
+  "description": "Find the minimum number of minutes needed for rot to spread to every reachable fresh orange in a grid.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["queue", "breadth-first-search", "matrix", "graphs"]
+}

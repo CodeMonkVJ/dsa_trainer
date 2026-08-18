@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Floyd-Warshall All-Pairs Shortest Paths","description":"Compute all-pairs shortest paths using dynamic programming over intermediate vertices.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["graph","floyd_warshall"]}

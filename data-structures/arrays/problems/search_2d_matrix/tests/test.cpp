@@ -5,19 +5,41 @@ using namespace std;
 #undef main
 
 int passed = 0, total = 0;
-void check(bool ok, const char* name) {
+void check(const vector<vector<int>> &matrix, int target, bool expected,
+           const char *name) {
+  const bool actual = searchMatrix(matrix, target);
   ++total;
-  if (ok) ++passed;
+  cout << "DSA_CASE {\"input\":{\"matrix\":[";
+  for (size_t i = 0; i < matrix.size(); ++i) {
+    if (i)
+      cout << ',';
+    cout << '[';
+    for (size_t j = 0; j < matrix[i].size(); ++j) {
+      if (j)
+        cout << ',';
+      cout << matrix[i][j];
+    }
+    cout << ']';
+  }
+  cout << "],\"target\":" << target
+       << "},\"expected\":" << (expected ? "true" : "false")
+       << ",\"actual\":" << (actual ? "true" : "false")
+       << ",\"passed\":" << (actual == expected ? "true" : "false") << "}\n";
+  const bool ok = actual == expected;
+  if (ok)
+    ++passed;
   cout << (ok ? "PASS " : "FAIL ") << name << '\n';
 }
 
 int main() {
-  const vector<vector<int>> matrix{{1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 60}};
-  check(searchMatrix(matrix, 3), "finds a value in the first row");
-  check(searchMatrix(matrix, 60), "finds a value in the last row");
-  check(!searchMatrix(matrix, 13), "rejects a missing value");
-  check(!searchMatrix({}, 1), "handles an empty matrix");
-  check(!searchMatrix({{}}, 1), "handles an empty row");
-  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total << "}\n";
+  const vector<vector<int>> matrix{
+      {1, 3, 5, 7}, {10, 11, 16, 20}, {23, 30, 34, 60}};
+  check(matrix, 3, true, "finds a value in the first row");
+  check(matrix, 60, true, "finds a value in the last row");
+  check(matrix, 13, false, "rejects a missing value");
+  check({}, 1, false, "handles an empty matrix");
+  check({{}}, 1, false, "handles an empty row");
+  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total
+       << "}\n";
   return passed == total ? 0 : 1;
 }

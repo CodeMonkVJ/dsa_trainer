@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Subset Sum II","description":"Generate unique subsets from a collection that may contain duplicates.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["recursion","backtracking","deduplication"]}

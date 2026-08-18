@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Balanced Binary Tree","description":"Determine whether the heights of every pair of sibling subtrees differ by at most one.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["binary-tree","recursion","height"]}

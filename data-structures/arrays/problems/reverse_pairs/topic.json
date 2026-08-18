@@ -4,8 +4,7 @@
   "description": "Count index pairs where the earlier value is more than twice the later value.",
   "difficulty": "hard",
   "languages": ["cpp"],
-  "green_seconds": 600,
-  "yellow_seconds": 900,
-  "red_seconds": 1200,
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
   "tags": ["array", "merge-sort", "divide-and-conquer"]
 }

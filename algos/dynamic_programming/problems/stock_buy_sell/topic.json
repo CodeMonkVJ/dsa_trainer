@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Best Time to Buy and Sell Stock","description":"Return the maximum profit from one buy followed by one later sell.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["dynamic-programming","stock_buy_sell"]}

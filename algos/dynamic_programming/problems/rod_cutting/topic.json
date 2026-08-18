@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Rod Cutting","description":"Maximize revenue from cutting a rod using unlimited pieces with known prices.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","rod_cutting"]}

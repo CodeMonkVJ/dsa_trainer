@@ -1,0 +1,2 @@
+{"schema_version":1,"name":"Minimum Sum Path in a Matrix","description":"Find the minimum-cost path from the top-left to bottom-right of a non-negative matrix, moving only right or down.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","grid","path-sum"]}
+

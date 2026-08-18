@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Median of Two Sorted Arrays",
+  "description": "Find the median of two sorted arrays in logarithmic time using binary partitioning.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-search", "arrays", "partition"]
+}

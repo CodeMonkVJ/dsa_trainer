@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"K-th Largest Element in an Unsorted Array","description":"Find the kth-largest value without sorting the complete input.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["heaps","quickselect","arrays"]}

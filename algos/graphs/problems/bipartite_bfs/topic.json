@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Bipartite Check using BFS","description":"Check whether an undirected graph is bipartite using BFS coloring.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","bipartite_bfs"]}

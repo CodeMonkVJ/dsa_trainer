@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Ceil in a Binary Search Tree","description":"Find the smallest key in a binary search tree that is greater than or equal to a target value. Return -1 when no such key exists.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["tree","binary-search-tree","search"]}

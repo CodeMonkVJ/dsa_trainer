@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Lowest Common Ancestor",
+  "description": "Find the lowest node that is an ancestor of two values in a binary tree.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-tree", "dfs", "ancestor"]
+}

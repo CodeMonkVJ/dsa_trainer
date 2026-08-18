@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Breadth-First Search Traversal","description":"Return the breadth-first traversal of vertices reachable from a start vertex.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["graph","bfs_traversal"]}

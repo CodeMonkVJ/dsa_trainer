@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Palindrome Linked List",
+  "description": "Determine whether a singly linked list reads the same forward and backward.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "two-pointers", "in-place"]
+}

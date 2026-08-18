@@ -5,17 +5,38 @@ using namespace std;
 #undef main
 
 int passed = 0, total = 0;
-void check(bool ok, const char* name) { ++total; if (ok) ++passed; cout << (ok ? "PASS " : "FAIL ") << name << '\n'; }
+void check(const vector<int> &nums, int target, bool expectedFound,
+           pair<int, int> expectedPair, const char *name) {
+  int actualA = -1, actualB = -1;
+  const bool actualFound = twoSum(nums, target, &actualA, &actualB);
+  const bool ok =
+      actualFound == expectedFound &&
+      (!expectedFound || pair<int, int>{actualA, actualB} == expectedPair);
+  ++total;
+  cout << "DSA_CASE {\"input\":{\"values\":[";
+  for (size_t i = 0; i < nums.size(); ++i) {
+    if (i)
+      cout << ',';
+    cout << nums[i];
+  }
+  cout << "],\"target\":" << target
+       << "},\"expected\":{\"found\":" << (expectedFound ? "true" : "false")
+       << ",\"indices\":[" << expectedPair.first << ',' << expectedPair.second
+       << "]},\"actual\":{\"found\":" << (actualFound ? "true" : "false")
+       << ",\"indices\":[" << actualA << ',' << actualB
+       << "]},\"passed\":" << (ok ? "true" : "false") << "}\n";
+  if (ok)
+    ++passed;
+  cout << (ok ? "PASS " : "FAIL ") << name << '\n';
+}
 
 int main() {
-  int a = -1, b = -1;
-  vector<int> nums{2, 7, 11, 15};
-  check(twoSum(nums, 9, &a, &b) && a == 0 && b == 1, "finds a pair in order");
-  nums = {3, 3, 4};
-  check(twoSum(nums, 6, &a, &b) && a == 0 && b == 1, "uses two equal values at distinct indices");
-  nums = {1, 2, 3};
-  check(!twoSum(nums, 20, &a, &b), "reports a missing pair");
-  check(twoSum(vector<int>{-4, 9, 13}, 5, nullptr, nullptr), "supports null output pointers");
-  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total << "}\n";
+  check({2, 7, 11, 15}, 9, true, {0, 1}, "finds a pair in order");
+  check({3, 3, 4}, 6, true, {0, 1},
+        "uses two equal values at distinct indices");
+  check({1, 2, 3}, 20, false, {-1, -1}, "reports a missing pair");
+  check({-4, 9, 13}, 5, true, {0, 1}, "supports output pointers");
+  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total
+       << "}\n";
   return passed == total ? 0 : 1;
 }

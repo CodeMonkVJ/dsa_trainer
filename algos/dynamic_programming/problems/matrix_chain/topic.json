@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Matrix Chain Multiplication","description":"Return the minimum scalar multiplication cost for a chain of matrices.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["dynamic-programming","matrix_chain"]}

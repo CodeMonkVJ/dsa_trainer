@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Serialize and Deserialize BST",
+  "description": "Encode a BST and reconstruct an equivalent tree without losing its keys.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-search-tree", "serialization", "preorder"]
+}

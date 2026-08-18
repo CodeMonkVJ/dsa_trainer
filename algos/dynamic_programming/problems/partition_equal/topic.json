@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Partition Equal Subset Sum","description":"Determine whether the values can be split into two subsets with equal sum.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","partition_equal"]}

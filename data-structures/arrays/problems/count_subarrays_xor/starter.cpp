@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-long long countSubarraysWithXor(const vector<int>& nums, int target) {
+long long countSubarraysWithXor(const vector<int> &nums, int target) {
   return 0;
 }
 

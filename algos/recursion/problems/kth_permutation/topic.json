@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"K-th Permutation Sequence","description":"Return the k-th lexicographic permutation of the numbers 1 through n.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["recursion","permutations","factorial-number-system"]}

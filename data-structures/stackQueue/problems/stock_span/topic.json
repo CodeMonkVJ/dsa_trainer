@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Stock Span",
+  "description": "For each trading day, find the number of consecutive prior days with price no greater than today's price.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["stack", "monotonic-stack", "array"]
+}

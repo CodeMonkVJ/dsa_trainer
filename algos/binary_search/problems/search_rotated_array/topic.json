@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Search in Rotated Sorted Array",
+  "description": "Find a target in an ascending array that has been rotated at an unknown pivot.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-search", "array", "rotation"]
+}

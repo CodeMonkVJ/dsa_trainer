@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"N-Queens","description":"Return every valid placement of n queens on an n by n chessboard so that no two queens attack each other.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["recursion","backtracking","chessboard"]}

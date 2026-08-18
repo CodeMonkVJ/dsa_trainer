@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Delete Node in O(1)",
+  "description": "Delete a singly linked-list node when only that node, not the list head, is provided.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "in-place", "pointer-manipulation"]
+}

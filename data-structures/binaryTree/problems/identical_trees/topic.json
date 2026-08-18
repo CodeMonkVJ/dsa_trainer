@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Identical Binary Trees",
+  "description": "Determine whether two binary trees have the same structure and values.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["binary-tree", "recursion", "tree-comparison"]
+}

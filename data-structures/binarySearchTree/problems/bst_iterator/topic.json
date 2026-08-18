@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"BST Iterator","description":"Iterate through a binary search tree in ascending order with amortized constant-time next operations.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","iterator","stack"]}

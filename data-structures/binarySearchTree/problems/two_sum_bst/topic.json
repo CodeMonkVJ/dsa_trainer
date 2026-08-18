@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Two Sum in a BST","description":"Determine whether two distinct nodes in a binary search tree sum to a target value.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","two-pointers"]}

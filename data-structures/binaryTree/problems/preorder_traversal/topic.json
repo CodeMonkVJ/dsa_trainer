@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Preorder Traversal",
+  "description": "Return the values of a binary tree in root-left-right order using recursion.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 600,
+  "tags": ["tree", "binary-tree", "traversal", "recursion"]
+}

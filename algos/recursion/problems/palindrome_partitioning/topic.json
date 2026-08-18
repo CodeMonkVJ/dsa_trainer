@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Palindrome Partitioning","description":"Partition a string into substrings so every part is a palindrome.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["recursion","backtracking","palindrome"]}

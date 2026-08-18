@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Insert into a Binary Search Tree","description":"Insert a key into a binary search tree while preserving ordering and ignoring duplicates.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["tree","binary-search-tree","insertion"]}

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Fractional Knapsack","description":"Maximize value in a knapsack when items may be split fractionally.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["greedy","knapsack","sorting"]}

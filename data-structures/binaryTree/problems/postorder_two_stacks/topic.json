@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Postorder Traversal (Two Stacks)","description":"Return a binary tree's postorder traversal using two stacks.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["binary-tree","traversal","stack"]}

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Subset Sums","description":"Generate every sum formed by choosing any subset of the input values.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["recursion","backtracking","subsets"]}

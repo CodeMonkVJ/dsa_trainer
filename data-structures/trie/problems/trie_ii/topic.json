@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Trie II: Count Words and Prefixes","description":"Count exact words and prefixes while supporting duplicate insertions and deletion.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["trie","trie_ii"]}

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Longest Word With All Prefixes","description":"Find the longest dictionary word for which every prefix is also a dictionary word.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["trie","longest_word"]}

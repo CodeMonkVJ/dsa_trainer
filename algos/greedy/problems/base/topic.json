@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"N Meetings in One Room","description":"Schedule the maximum number of non-overlapping meetings in one room.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["greedy","scheduling","sorting"]}

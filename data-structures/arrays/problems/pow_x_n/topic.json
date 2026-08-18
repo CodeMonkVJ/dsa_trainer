@@ -4,8 +4,7 @@
   "description": "Compute a real number raised to an integer power efficiently.",
   "difficulty": "medium",
   "languages": ["cpp"],
-  "green_seconds": 300,
-  "yellow_seconds": 450,
-  "red_seconds": 600,
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
   "tags": ["array", "math", "binary-exponentiation"]
 }

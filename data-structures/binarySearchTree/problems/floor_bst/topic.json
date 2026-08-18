@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Floor in a Binary Search Tree","description":"Find the greatest key less than or equal to a target in a binary search tree.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["tree","binary-search-tree","floor"]}

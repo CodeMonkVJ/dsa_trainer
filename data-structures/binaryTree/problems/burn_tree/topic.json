@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Burn a Binary Tree",
+  "description": "Find the time needed for fire starting at a target node to reach every node in the binary tree.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-tree", "breadth-first-search", "simulation"]
+}

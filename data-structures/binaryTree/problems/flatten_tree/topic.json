@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Flatten Binary Tree to Linked List","description":"Flatten a binary tree in place into preorder linked-list form using right pointers.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["binary-tree","flatten","preorder"]}

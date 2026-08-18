@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Level Order Traversal","description":"Return binary-tree values level by level from left to right.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["tree","binary-tree","traversal","bfs"]}

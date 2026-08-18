@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Minimum Platforms","description":"Find the minimum railway platforms needed so no arriving train waits.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["greedy","sweep-line","sorting"]}

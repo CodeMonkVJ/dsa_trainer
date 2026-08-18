@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Largest Rectangle in Histogram",
+  "description": "Find the largest rectangular area that can be formed by contiguous histogram bars.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["stack", "monotonic-stack", "histogram"]
+}

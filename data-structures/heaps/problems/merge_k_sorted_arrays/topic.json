@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Merge K Sorted Arrays",
+  "description": "Merge multiple sorted arrays into one sorted array using a min-heap.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["heap", "priority-queue", "sorting", "k-way-merge"]
+}

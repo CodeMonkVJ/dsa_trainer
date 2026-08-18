@@ -5,7 +5,6 @@
   "difficulty": "medium",
   "languages": ["cpp"],
   "green_seconds": 600,
-  "yellow_seconds": 900,
-  "red_seconds": 900,
+  "yellow_seconds": 1200,
   "tags": ["array", "sorting", "two-pointers"]
 }

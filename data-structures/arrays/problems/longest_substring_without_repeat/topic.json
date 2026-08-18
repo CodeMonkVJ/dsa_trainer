@@ -4,8 +4,7 @@
   "description": "Find the length of the longest substring with no repeated characters.",
   "difficulty": "medium",
   "languages": ["cpp"],
-  "green_seconds": 450,
-  "yellow_seconds": 675,
-  "red_seconds": 675,
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
   "tags": ["array", "string", "sliding-window"]
 }

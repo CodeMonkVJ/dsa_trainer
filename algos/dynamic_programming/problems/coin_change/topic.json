@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Coin Change","description":"Return the minimum number of unlimited coins needed to make a target amount, or -1 when impossible.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","coin_change"]}

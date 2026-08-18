@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Rotate Linked List",
+  "description": "Rotate a singly linked list to the right by k positions while reusing its nodes.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "rotation", "pointers"]
+}

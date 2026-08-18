@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Construct BST from Preorder","description":"Build a binary search tree from its preorder traversal while preserving the given ordering.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","construction"]}

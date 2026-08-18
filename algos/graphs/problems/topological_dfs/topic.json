@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Topological Sort using DFS","description":"Return a topological ordering of a DAG using DFS, or reject cyclic input.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","topological_dfs"]}

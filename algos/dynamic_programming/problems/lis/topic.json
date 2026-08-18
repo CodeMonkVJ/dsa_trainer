@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Longest Increasing Subsequence","description":"Return the length of the longest strictly increasing subsequence.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","lis"]}

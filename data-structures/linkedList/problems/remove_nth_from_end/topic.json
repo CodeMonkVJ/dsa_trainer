@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Remove Nth Node From End",
+  "description": "Remove the nth node from the end of a singly linked list in one traversal when possible.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "two-pointers", "dummy-node"]
+}

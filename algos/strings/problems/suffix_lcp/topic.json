@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Suffix Array and LCP",
+  "description": "Build lexicographically sorted suffix indexes and neighboring LCP values.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["strings", "suffix-array", "lcp", "sorting"]
+}

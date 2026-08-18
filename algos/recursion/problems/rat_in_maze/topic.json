@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Rat in a Maze","description":"Find every path for a rat moving from the top-left to the bottom-right cell of a binary maze.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["recursion","backtracking","matrix"]}

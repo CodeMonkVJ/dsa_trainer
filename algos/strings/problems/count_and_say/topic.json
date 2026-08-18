@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Count and Say",
+  "description": "Generate the n-th term of the count-and-say sequence.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["strings", "simulation", "run-length-encoding"]
+}

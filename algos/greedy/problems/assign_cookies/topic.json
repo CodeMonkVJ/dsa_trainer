@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Assign Cookies","description":"Maximize the number of children satisfied by assigning each at most one cookie.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["greedy","sorting","two-pointers"]}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Merge Two Sorted Linked Lists",
+  "description": "Merge two sorted singly linked lists into one sorted list by relinking their existing nodes.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "two-pointers", "merge"]
+}

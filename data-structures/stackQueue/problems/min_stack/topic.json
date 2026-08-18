@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Minimum Stack",
+  "description": "Design a stack that supports retrieving the minimum value in constant time.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["stack", "design", "minimum"]
+}

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Strongly Connected Components (Kosaraju)","description":"Count strongly connected components in a directed graph using Kosaraju's algorithm.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["graph","scc_kosaraju"]}

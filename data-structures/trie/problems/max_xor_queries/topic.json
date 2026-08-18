@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Maximum XOR With an Array Element","description":"Answer maximum-XOR queries restricted to array values below a query limit.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["trie","max_xor_queries"]}

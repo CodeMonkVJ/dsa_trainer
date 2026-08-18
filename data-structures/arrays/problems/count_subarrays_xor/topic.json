@@ -4,8 +4,7 @@
   "description": "Count contiguous subarrays whose bitwise XOR equals a target.",
   "difficulty": "medium",
   "languages": ["cpp"],
-  "green_seconds": 450,
-  "yellow_seconds": 675,
-  "red_seconds": 675,
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
   "tags": ["array", "prefix-xor", "hash-table"]
 }

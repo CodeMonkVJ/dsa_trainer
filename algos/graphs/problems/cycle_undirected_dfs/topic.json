@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Detect Cycle in an Undirected Graph using DFS","description":"Detect cycles in a possibly disconnected undirected graph using DFS.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","cycle_undirected_dfs"]}

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Validate a Binary Search Tree","description":"Determine whether a binary tree satisfies the binary search tree ordering property.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","validation"]}

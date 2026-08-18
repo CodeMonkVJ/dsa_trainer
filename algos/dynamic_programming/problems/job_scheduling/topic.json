@@ -1,0 +1,2 @@
+{"schema_version":1,"name":"Maximum Profit in Job Scheduling","description":"Choose non-overlapping jobs to maximize total profit.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["dynamic-programming","interval-scheduling","binary-search"]}
+

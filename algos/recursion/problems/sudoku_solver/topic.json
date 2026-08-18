@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Sudoku Solver","description":"Fill a 9x9 Sudoku board so every row, column, and 3x3 box contains the digits 1 through 9 exactly once.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["recursion","backtracking","sudoku"]}

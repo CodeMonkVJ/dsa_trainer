@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Delete from a Binary Search Tree","description":"Delete a key from a binary search tree while handling leaf, one-child, and two-child nodes.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","deletion"]}

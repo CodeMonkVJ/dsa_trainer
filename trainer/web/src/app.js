@@ -14,7 +14,9 @@ const elements = {
   timer: document.querySelector('#timer'),
   topicCategory: document.querySelector('#topic-category'),
   topicName: document.querySelector('#topic-name'),
+  topicDifficulty: document.querySelector('#topic-difficulty'),
   topicPrompt: document.querySelector('#topic-prompt'),
+  problemPicker: document.querySelector('#problem-picker'),
   terminal: document.querySelector('#terminal'),
   terminalOverlay: document.querySelector('#terminal-overlay'),
   start: document.querySelector('#start-button'),
@@ -24,6 +26,16 @@ const elements = {
   cancel: document.querySelector('#cancel-button'),
   testOutput: document.querySelector('#test-output'),
   testSummary: document.querySelector('#test-summary'),
+  testCaseViewer: document.querySelector('#test-case-viewer'),
+  testCaseTitle: document.querySelector('#test-case-title'),
+  testCasePosition: document.querySelector('#test-case-position'),
+  testCaseStatus: document.querySelector('#test-case-status'),
+  testCaseInput: document.querySelector('#test-case-input'),
+  testCaseExpected: document.querySelector('#test-case-expected'),
+  testCaseActual: document.querySelector('#test-case-actual'),
+  testCaseDetails: document.querySelector('#test-case-details'),
+  testCasePrev: document.querySelector('#test-case-prev'),
+  testCaseNext: document.querySelector('#test-case-next'),
   resultBadge: document.querySelector('#result-badge'),
   historyList: document.querySelector('#history-list'),
   historySummary: document.querySelector('#history-summary'),
@@ -42,7 +54,10 @@ const state = {
   timerInterval: null,
   pollInterval: null,
   testsPassed: false,
+  testCases: [],
+  testCaseIndex: 0,
   referenceImplementation: null,
+  catalog: null,
 };
 
 async function api(path, options = {}) {
@@ -54,6 +69,7 @@ async function api(path, options = {}) {
 
 async function loadCatalog() {
   const catalog = await api('/api/catalog');
+  state.catalog = catalog;
   elements.catalog.replaceChildren(...catalog.categories.map(renderCategory));
   elements.status.textContent = 'Choose a topic to begin.';
 }
@@ -91,15 +107,28 @@ function renderTopic(category, topic) {
     card.append(progress);
 
   }
-  if (!topic.invalid) card.addEventListener('click', () => openTopic(category.id, topic.id));
+  if (!topic.invalid) card.addEventListener('click', () => openTopic(category.id, topic.id, 'base'));
   return card;
 }
 
-async function openTopic(category, topic) {
-  const details = await api(`/api/topics/${category}/${topic}`);
+function topicApiPath(category, group, problem = 'base') {
+  return problem === 'base'
+    ? `/api/topics/${category}/${group}`
+    : `/api/topics/${category}/${group}/problems/${problem}`;
+}
+
+async function openTopic(category, topic, problem = 'base') {
+  if (hasActiveAttempt() && !isSelectedTopic(category, topic, problem)) {
+    showTerminalOverlay(`Finish or cancel ${state.attempt.topic} before opening another problem.`, true);
+    return;
+  }
+  const details = await api(topicApiPath(category, topic, problem));
   state.selectedTopic = details;
+  renderProblemPicker(category, topic);
   elements.topicCategory.textContent = category;
   elements.topicName.textContent = details.metadata.name;
+  elements.topicDifficulty.textContent = details.metadata.difficulty;
+  elements.topicDifficulty.className = `difficulty-badge ${details.metadata.difficulty}`;
   elements.topicPrompt.innerHTML = DOMPurify.sanitize(marked.parse(details.prompt));
   renderHistory(details.history ?? []);
   elements.dashboard.classList.add('hidden');
@@ -108,6 +137,30 @@ async function openTopic(category, topic) {
   state.testsPassed = false;
   resetHelp();
   setAttemptControls(false);
+}
+
+function renderProblemPicker(category, group) {
+  const categoryEntry = state.catalog?.categories.find((entry) => entry.id === category);
+  const topic = categoryEntry?.topics.find((entry) => entry.id === group);
+  const problems = topic?.problems ?? [{ id: 'base', name: 'Base implementation' }];
+  elements.problemPicker.replaceChildren();
+  for (const problem of problems) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'problem-link';
+    const blockedByAttempt = hasActiveAttempt() && !isSelectedTopic(category, group, problem.id);
+    button.disabled = blockedByAttempt;
+    if (blockedByAttempt) button.title = 'Cancel the active problem before opening another problem.';
+    const name = document.createElement('span');
+    name.textContent = problem.name;
+    const difficulty = document.createElement('small');
+    difficulty.textContent = problem.difficulty ?? '';
+    difficulty.className = `problem-difficulty ${problem.difficulty ?? ''}`;
+    button.append(name, difficulty);
+    button.classList.toggle('selected', problem.id === (state.selectedTopic.problem ?? 'base'));
+    button.addEventListener('click', () => openTopic(category, group, problem.id));
+    elements.problemPicker.append(button);
+  }
 }
 
 function resetHelp() {
@@ -199,22 +252,23 @@ async function beginAttempt(path) {
   state.testsPassed = false;
   resetHelp();
   localStorage.setItem('dsa-active-attempt', state.attempt.id);
-  localStorage.setItem('dsa-active-topic', JSON.stringify({ category, topic: id }));
+  localStorage.setItem('dsa-active-topic', JSON.stringify({ category, topic: id, problem: state.selectedTopic.problem }));
   elements.start.disabled = true;
   setAttemptControls(true);
   startTimer();
   connectTerminal();
   startPolling();
+  renderProblemPicker(category, id);
 }
 
 function startAttempt() {
-  const { category, id } = state.selectedTopic;
-  return beginAttempt(`/api/topics/${category}/${id}/attempts`);
+  const { category, id, problem } = state.selectedTopic;
+  return beginAttempt(`${topicApiPath(category, id, problem)}/attempts`);
 }
 
 function loadPreviousAttempt(attemptId) {
-  const { category, id } = state.selectedTopic;
-  return beginAttempt(`/api/topics/${category}/${id}/attempts/from/${encodeURIComponent(attemptId)}`);
+  const { category, id, problem } = state.selectedTopic;
+  return beginAttempt(`${topicApiPath(category, id, problem)}/attempts/from/${encodeURIComponent(attemptId)}`);
 }
 
 function createTerminal() {
@@ -289,11 +343,26 @@ function updateTimer() {
   const elapsed = state.attempt.elapsed_ms + (Date.now() - state.attempt.loaded_at);
   const seconds = Math.max(0, Math.floor(elapsed / 1000));
   elements.timer.textContent = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
-  elements.timer.classList.toggle('yellow', seconds > state.attempt.target_seconds && seconds <= state.attempt.warning_seconds);
-  elements.timer.classList.toggle('red', seconds > state.attempt.warning_seconds);
-  const revealAvailable = seconds >= 15 * 60;
+  elements.timer.classList.toggle('yellow', seconds > state.attempt.green_seconds && seconds <= state.attempt.yellow_seconds);
+  elements.timer.classList.toggle('red', seconds > state.attempt.yellow_seconds);
+  const revealAvailable = seconds > state.attempt.yellow_seconds;
   elements.reveal.classList.toggle('hidden', !revealAvailable);
   elements.reveal.disabled = !revealAvailable;
+  elements.reveal.textContent = revealAvailable ? 'Show hint' : `Hint after ${formatSeconds(state.attempt.yellow_seconds)}`;
+}
+
+function formatSeconds(seconds) {
+  const minutes = Math.floor(Number(seconds) / 60);
+  const remainder = Number(seconds) % 60;
+  return `${minutes}:${String(remainder).padStart(2, '0')}`;
+}
+
+function hasActiveAttempt() {
+  return state.attempt?.state === 'active';
+}
+
+function isSelectedTopic(category, topic, problem = 'base') {
+  return state.selectedTopic?.category === category && state.selectedTopic?.id === topic && (state.selectedTopic?.problem ?? 'base') === problem;
 }
 
 function startPolling() {
@@ -324,21 +393,23 @@ async function runTests(submit) {
   elements.testOutput.textContent = submit ? 'Submitting…' : 'Running tests…';
   elements.testSummary.textContent = '';
   elements.testSummary.className = 'test-summary hidden';
+  clearTestCases();
   elements.resultBadge.textContent = '';
   try {
     const result = await api(`/api/attempts/${state.attempt.id}/${submit ? 'submit' : 'run'}`, { method: 'POST' });
     renderTestOutput(result);
-    elements.resultBadge.textContent = result.passed ? `${result.status} · passed` : `${result.status} · failed`;
-    elements.resultBadge.className = result.status;
+    const outcome = result.outcome ?? (result.passed ? 'passed' : result.phase === 'compilation' ? 'compiler_error' : 'test_failed');
+    elements.resultBadge.textContent = result.passed ? `${result.status} · passed` : outcomeLabel(outcome);
+    elements.resultBadge.className = result.passed ? result.status : outcomeClass(outcome);
     if (!submit) {
       state.testsPassed = result.passed;
       setAttemptControls(true);
     }
     if (submit) {
       finishAttempt();
-      const { category, id } = state.selectedTopic;
+      const { category, id, problem } = state.selectedTopic;
       const [details] = await Promise.all([
-        api(`/api/topics/${category}/${id}`),
+        api(topicApiPath(category, id, problem)),
         loadCatalog(),
       ]);
       state.selectedTopic = details;
@@ -352,7 +423,7 @@ async function runTests(submit) {
 }
 
 function renderTestOutput(result) {
-  const stdoutLines = String(result.stdout ?? '').split('\n');
+  const stdoutLines = String(result.stdout ?? '').replaceAll('\\n', '\n').split('\n');
   const markerIndex = stdoutLines.findIndex((line) => line.trimStart().startsWith('DSA_RESULT '));
   let testSummary = null;
   if (markerIndex >= 0) {
@@ -365,12 +436,71 @@ function renderTestOutput(result) {
     }
   }
 
+  const outcome = result.outcome ?? (result.passed ? 'passed' : result.phase === 'compilation' ? 'compiler_error' : 'test_failed');
+  const testCases = [];
   const remainingLines = [];
   for (const line of stdoutLines) {
-    const match = line.trim().match(/^(PASS|FAIL)\s+(.+)$/);
-    if (match) continue;
-    else if (line.trim()) remainingLines.push(line);
+    const trimmed = line.trim();
+    const structured = trimmed.match(/^DSA_CASE\s+(\{.*\})$/);
+    if (structured) {
+      try {
+        const testCase = JSON.parse(structured[1]);
+        testCases.push({
+          source: 'structured',
+          status: testCase.passed === true || testCase.status === 'pass' ? 'pass' : 'fail',
+          input: testCase.input,
+          expected: stringifyCaseValue(testCase.expected),
+          actual: stringifyCaseValue(testCase.actual),
+          details: testCase.details ?? '',
+        });
+        continue;
+      } catch {
+        // Keep malformed markers visible below.
+      }
+    }
+    const match = trimmed.match(/^(PASS|FAIL)\s+(.+)$/);
+    if (match) {
+      const status = match[1].toLowerCase();
+      const assertion = match[2].match(/^(.+?)\s*:\s*expected\s+(.+?),\s*got\s+(.+)$/);
+      testCases.push({
+        source: 'legacy',
+        status,
+        input: '',
+        expected: assertion ? assertion[2] : 'true',
+        actual: assertion ? assertion[3] : status === 'pass' ? 'true' : 'false',
+        details: assertion ? 'The test harness reports expected and actual values, but does not emit the original input.' : 'This legacy test harness reports only PASS/FAIL and does not emit input or result values.',
+      });
+    }
+    else if (trimmed) remainingLines.push(line);
   }
+
+  const stderr = String(result.stderr ?? '').trim();
+  const structuredCases = testCases.filter((testCase) => testCase.source === 'structured');
+  if (structuredCases.length) {
+    testCases.splice(0, testCases.length, ...structuredCases);
+  }
+  if (outcome === 'compiler_error' || outcome === 'time_limit_exceeded' || outcome === 'runtime_error') {
+    testCases.length = 0;
+    testCases.push({
+      status: outcome === 'time_limit_exceeded' ? 'timeout' : 'error',
+      input: 'Test harness completed without a structured case result',
+      expected: 'true',
+      actual: 'false',
+      details: [remainingLines.join('\n').trim(), stderr].filter(Boolean).join('\n\n'),
+    });
+  } else if (!testCases.length && (remainingLines.length || stderr)) {
+    testCases.push({
+      status: result.passed ? 'pass' : 'fail',
+      input: '',
+      expected: '',
+      actual: '',
+      details: [remainingLines.join('\n').trim(), stderr].filter(Boolean).join('\n\n'),
+    });
+  }
+  state.testCases = testCases;
+  state.testCaseIndex = testCases.findIndex((testCase) => testCase.status === 'fail');
+  if (state.testCaseIndex < 0) state.testCaseIndex = 0;
+  renderTestCase();
 
   if (testSummary && Number.isFinite(testSummary.passed) && Number.isFinite(testSummary.total)) {
     const allPassed = testSummary.passed === testSummary.total;
@@ -378,15 +508,90 @@ function renderTestOutput(result) {
     elements.testSummary.className = `test-summary ${allPassed ? 'green' : 'red'}`;
   }
 
-  const output = [remainingLines.join('\n').trim(), String(result.stderr ?? '').trim()]
+  const output = [remainingLines.join('\n').trim(), stderr]
     .filter(Boolean)
     .join('\n');
   elements.testOutput.textContent = output || 'No compiler output.';
 }
 
+function clearTestCases() {
+  state.testCases = [];
+  state.testCaseIndex = 0;
+  elements.testCaseViewer.classList.add('hidden');
+  elements.testCaseTitle.textContent = '';
+  elements.testCasePosition.textContent = '';
+  elements.testCaseStatus.textContent = '';
+  elements.testCaseInput.textContent = '';
+  elements.testCaseExpected.textContent = '';
+  elements.testCaseActual.textContent = '';
+  elements.testCaseDetails.textContent = '';
+}
+
+function renderTestCase() {
+  if (!state.testCases.length) {
+    elements.testCaseViewer.classList.add('hidden');
+    return;
+  }
+  const testCase = state.testCases[state.testCaseIndex];
+  elements.testCaseViewer.classList.remove('hidden');
+  elements.testCaseTitle.textContent = testCase.status === 'pass' ? 'Test passed' : testCase.status === 'fail' ? 'Test did not pass' : outcomeLabel(testCase.status === 'timeout' ? 'time_limit_exceeded' : 'runtime_error');
+  elements.testCasePosition.textContent = `${state.testCaseIndex + 1} / ${state.testCases.length}`;
+  elements.testCaseStatus.textContent = testCase.status === 'pass' ? 'Passed' : testCase.status === 'fail' ? 'Failed' : outcomeLabel(testCase.status === 'timeout' ? 'time_limit_exceeded' : 'runtime_error');
+  elements.testCaseStatus.className = `test-case-status ${testCase.status}`;
+  elements.testCaseInput.textContent = formatCaseInput(testCase.input);
+  elements.testCaseExpected.textContent = testCase.expected || '—';
+  elements.testCaseActual.textContent = testCase.actual || '—';
+  elements.testCaseDetails.textContent = testCase.details || (testCase.status === 'pass' ? 'The implementation returned the expected result.' : 'This test did not pass.');
+  elements.testCasePrev.disabled = state.testCaseIndex === 0;
+  elements.testCaseNext.disabled = state.testCaseIndex === state.testCases.length - 1;
+}
+
+function stringifyCaseValue(value) {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  try { return JSON.stringify(value, null, 2); } catch { return String(value); }
+}
+
+function formatCaseInput(input) {
+  if (input == null || input === '') return 'Not emitted by this test';
+  if (typeof input === 'object' && !Array.isArray(input)) {
+    return Object.entries(input)
+      .map(([key, value]) => `${key}: ${formatInlineCaseValue(value)}`)
+      .join('\n');
+  }
+  return formatInlineCaseValue(input);
+}
+
+function formatInlineCaseValue(value) {
+  if (typeof value === 'string') return value;
+  try { return JSON.stringify(value); } catch { return String(value); }
+}
+
+function outcomeLabel(outcome) {
+  return ({
+    passed: 'Passed',
+    test_failed: 'Tests did not pass',
+    compiler_error: 'Compiler error',
+    time_limit_exceeded: 'Time limit exceeded',
+    runtime_error: 'Runtime error',
+  })[outcome] ?? 'Test error';
+}
+
+function outcomeClass(outcome) {
+  return outcome === 'time_limit_exceeded' ? 'yellow' : 'red';
+}
+
 async function cancelAttempt() {
-  await api(`/api/attempts/${state.attempt.id}/cancel`, { method: 'POST' });
-  finishAttempt();
+  if (!state.attempt) return;
+  elements.cancel.disabled = true;
+  elements.cancel.textContent = 'Cancelling…';
+  try {
+    await api(`/api/attempts/${state.attempt.id}/cancel`, { method: 'POST' });
+    finishAttempt();
+  } finally {
+    elements.cancel.textContent = 'Cancel';
+    if (hasActiveAttempt()) elements.cancel.disabled = false;
+  }
 }
 
 async function revealReference() {
@@ -425,6 +630,7 @@ function finishAttempt() {
   resetHelp();
   elements.start.disabled = false;
   state.testsPassed = false;
+  if (state.selectedTopic) renderProblemPicker(state.selectedTopic.category, state.selectedTopic.id);
 }
 
 function setAttemptControls(active) {
@@ -449,7 +655,7 @@ async function restoreAttempt() {
   const topic = JSON.parse(localStorage.getItem('dsa-active-topic') ?? 'null');
   if (!attemptId || !topic) return false;
   try {
-    await openTopic(topic.category, topic.topic);
+    await openTopic(topic.category, topic.topic, topic.problem ?? 'base');
     const attempt = await api(`/api/attempts/${attemptId}`);
     if (attempt.state !== 'active') return false;
     state.attempt = { ...attempt, loaded_at: Date.now() };
@@ -468,6 +674,10 @@ async function restoreAttempt() {
 }
 
 elements.home.addEventListener('click', () => {
+  if (hasActiveAttempt()) {
+    showTerminalOverlay('Finish or cancel the active problem before navigating away.', true);
+    return;
+  }
   elements.practice.classList.add('hidden');
   elements.dashboard.classList.remove('hidden');
 });
@@ -477,6 +687,12 @@ elements.submit.addEventListener('click', () => runTests(true));
 elements.reveal.addEventListener('click', () => revealReference());
 elements.answer.addEventListener('click', revealImplementation);
 elements.cancel.addEventListener('click', () => cancelAttempt().catch((error) => showTerminalOverlay(error.message, true)));
+elements.testCasePrev.addEventListener('click', () => {
+  if (state.testCaseIndex > 0) { state.testCaseIndex -= 1; renderTestCase(); }
+});
+elements.testCaseNext.addEventListener('click', () => {
+  if (state.testCaseIndex < state.testCases.length - 1) { state.testCaseIndex += 1; renderTestCase(); }
+});
 
 loadCatalog()
   .then(() => restoreAttempt())

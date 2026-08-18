@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Subset Sum","description":"Determine whether a subset of the values sums exactly to a target.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","subset_sum"]}

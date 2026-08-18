@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Lowest Common Ancestor in a BST","description":"Find the lowest common ancestor of two keys in a binary search tree.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","lowest-common-ancestor"]}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Deque",
+  "description": "Implement a double-ended queue with constant-time operations at both ends.",
+  "difficulty": "easy",
+  "languages": ["cpp"],
+  "green_seconds": 300,
+  "yellow_seconds": 600,
+  "tags": ["deque", "linked-list", "queue"]
+}

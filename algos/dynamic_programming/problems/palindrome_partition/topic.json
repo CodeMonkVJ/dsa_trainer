@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Palindrome Partitioning II","description":"Return the minimum cuts needed to partition a string into palindromic substrings.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["dynamic-programming","palindrome_partition"]}

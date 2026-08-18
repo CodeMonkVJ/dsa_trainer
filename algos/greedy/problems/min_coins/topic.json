@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Minimum Coins","description":"Find the fewest coins needed to make an amount using canonical denominations.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["greedy","coins","canonical-denomination"]}

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Sliding Window Maximum",
+  "description": "Return the maximum value in every contiguous window of a fixed size.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["queue", "deque", "sliding-window"]
+}

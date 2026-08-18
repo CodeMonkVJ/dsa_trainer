@@ -2,10 +2,9 @@
   "schema_version": 1,
   "name": "Merge Sorted Arrays",
   "description": "Merge two sorted arrays in place while keeping their separate storage.",
-  "difficulty": "intermediate",
+  "difficulty": "medium",
   "languages": ["cpp"],
-  "green_seconds": 450,
-  "yellow_seconds": 700,
-  "red_seconds": 900,
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
   "tags": ["arrays", "sorting", "two-pointers"]
 }

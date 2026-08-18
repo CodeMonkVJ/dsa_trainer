@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Binary Tree Height","description":"Compute the height of a binary tree.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["binary-tree","recursion","breadth-first-search"]}

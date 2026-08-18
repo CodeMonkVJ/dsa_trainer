@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Inorder Successor and Predecessor in a BST","description":"Find the inorder predecessor and successor values for a key in a binary search tree.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","inorder"]}

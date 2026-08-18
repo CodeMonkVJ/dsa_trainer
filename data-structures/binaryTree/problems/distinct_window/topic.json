@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Distinct Numbers in a Window","description":"Count distinct values in every fixed-size sliding window.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["sliding-window","hashing","arrays"]}

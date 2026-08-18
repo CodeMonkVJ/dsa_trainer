@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Bellman-Ford Shortest Path","description":"Compute single-source shortest paths with support for negative edges and cycle detection.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["graph","bellman_ford"]}

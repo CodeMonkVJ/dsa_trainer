@@ -4,8 +4,7 @@
   "description": "Find the largest sum of a contiguous subarray.",
   "difficulty": "easy",
   "languages": ["cpp"],
-  "green_seconds": 240,
-  "yellow_seconds": 360,
-  "red_seconds": 480,
+  "green_seconds": 300,
+  "yellow_seconds": 600,
   "tags": ["array", "kadane", "subarray"]
 }

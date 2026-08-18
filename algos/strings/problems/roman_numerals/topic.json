@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Roman Numerals",
+  "description": "Convert between valid Roman numeral strings and integer values.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["strings", "math", "parsing"]
+}

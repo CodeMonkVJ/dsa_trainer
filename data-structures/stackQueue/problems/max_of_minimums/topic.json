@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Max of Minimums for Every Window Size",
+  "description": "For every window size, find the maximum among the minimum values of all windows of that size.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["stack", "monotonic-stack", "arrays"]
+}

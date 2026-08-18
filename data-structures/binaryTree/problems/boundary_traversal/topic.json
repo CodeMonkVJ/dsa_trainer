@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Boundary Traversal",
+  "description": "List the outside boundary of a binary tree in counter-clockwise order.",
+  "difficulty": "hard",
+  "languages": ["cpp"],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": ["binary-tree", "dfs", "boundary"]
+}

@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Word Break","description":"Determine whether a complete string can be segmented into dictionary words, allowing a word to be reused.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["recursion","backtracking","dynamic-programming","strings"]}

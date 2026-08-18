@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Job Sequencing","description":"Schedule deadline-constrained jobs for maximum profit when each job takes one unit of time.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["greedy","deadlines","scheduling"]}

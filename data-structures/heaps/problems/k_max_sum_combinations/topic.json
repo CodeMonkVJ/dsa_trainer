@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "K Maximum Sum Combinations",
+  "description": "Find the k largest pair sums formed by choosing one value from each of two arrays.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["heap", "priority-queue", "sorting", "combinations"]
+}

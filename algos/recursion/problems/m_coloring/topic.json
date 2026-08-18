@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"M Coloring Problem","description":"Color the vertices of a graph with at most m colors so that adjacent vertices receive different colors.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["recursion","backtracking","graphs","coloring"]}

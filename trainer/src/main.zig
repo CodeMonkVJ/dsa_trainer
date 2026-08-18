@@ -106,25 +106,36 @@ fn serveTopicRoute(app: *App, request: *std.http.Server.Request) !void {
     const suffix = request.head.target["/api/topics/".len..];
     var parts = std.mem.splitScalar(u8, suffix, '/');
     const category_id = parts.next() orelse return respondApiError(request, .bad_request, "invalid_topic_path");
-    const topic_id = parts.next() orelse return respondApiError(request, .bad_request, "invalid_topic_path");
-    const action = parts.next();
-    const modifier = parts.next();
-    const source_attempt_id = parts.next();
-    if (parts.next() != null or !validTopic(category_id, topic_id)) {
+    const group_id = parts.next() orelse return respondApiError(request, .bad_request, "invalid_topic_path");
+    var problem_id: []const u8 = "base";
+    var action: ?[]const u8 = null;
+    var modifier: ?[]const u8 = null;
+    var source_attempt_id: ?[]const u8 = null;
+    if (parts.next()) |segment| {
+        if (!std.mem.eql(u8, segment, "problems")) {
+            action = segment;
+        } else {
+            problem_id = parts.next() orelse return respondApiError(request, .bad_request, "invalid_topic_path");
+            action = parts.next();
+        }
+        modifier = parts.next();
+        source_attempt_id = parts.next();
+    }
+    if (parts.next() != null or !validTopic(category_id, group_id) or !catalog.validId(problem_id)) {
         return respondApiError(request, .bad_request, "invalid_topic_path");
     }
 
     if (request.head.method == .GET and action == null and modifier == null and source_attempt_id == null) {
-        return serveTopicDetails(app, request, category_id, topic_id);
+        return serveTopicDetails(app, request, category_id, group_id, problem_id);
     }
     if (request.head.method == .POST and action != null and std.mem.eql(u8, action.?, "attempts")) {
         if (modifier == null and source_attempt_id == null) {
-            return startAttempt(app, request, category_id, topic_id, null);
+            return startAttempt(app, request, category_id, group_id, problem_id, null);
         }
         if (modifier != null and std.mem.eql(u8, modifier.?, "from") and source_attempt_id != null and
             catalog.validId(source_attempt_id.?))
         {
-            return startAttempt(app, request, category_id, topic_id, source_attempt_id.?);
+            return startAttempt(app, request, category_id, group_id, problem_id, source_attempt_id.?);
         }
     }
     return respondApiError(request, .not_found, "not_found");
@@ -152,11 +163,16 @@ fn serveAttemptRoute(app: *App, request: *std.http.Server.Request) !void {
         return runAttempt(app, request, attempt_id, true);
     }
     if (request.head.method == .POST and action != null and std.mem.eql(u8, action.?, "cancel")) {
-        const attempt = app.attempt_store.finish(app.io, attempt_id, .canceled) catch
+        const attempt = app.attempt_store.get(app.io, attempt_id) orelse
+            return respondApiError(request, .not_found, "attempt_not_found");
+        if (attempt.state != .active) return respondApiError(request, .conflict, "attempt_not_active");
+        session.terminate(app.allocator, app.io, &attempt) catch |err| {
+            std.log.err("failed to terminate canceled editor session: {t}", .{err});
+            return respondApiError(request, .internal_server_error, "session_termination_failed");
+        };
+        const canceled = app.attempt_store.finish(app.io, attempt_id, .canceled) catch
             return respondApiError(request, .conflict, "attempt_not_active");
-        session.terminate(app.allocator, app.io, &attempt) catch |err|
-            std.log.warn("failed to terminate canceled editor session: {t}", .{err});
-        return respondAttempt(app, request, &attempt, "unknown");
+        return respondAttempt(app, request, &canceled, "unknown");
     }
     if (request.head.method == .POST and action != null and std.mem.eql(u8, action.?, "reveal")) {
         return revealReference(app, request, attempt_id);
@@ -168,9 +184,9 @@ fn revealReference(app: *App, request: *std.http.Server.Request, attempt_id: []c
     const attempt = app.attempt_store.reveal(app.io, attempt_id) catch |err| switch (err) {
         error.AttemptNotFound => return respondApiError(request, .not_found, "attempt_not_found"),
         error.AttemptAlreadyFinished => return respondApiError(request, .conflict, "attempt_not_active"),
-        error.RevealLocked => return respondApiError(request, .forbidden, "reveal_locked_until_15_minutes"),
+        error.RevealLocked => return respondApiError(request, .forbidden, "reveal_locked_until_yellow_zone"),
     };
-    const topic_path = try checkedTopicPath(app, attempt.category(), attempt.topic());
+    const topic_path = try checkedProblemPath(app, attempt.category(), attempt.topic(), attempt.problem());
     defer app.allocator.free(topic_path);
     const implementation_path = try std.fs.path.join(app.allocator, &.{ topic_path, "implementation.cpp" });
     defer app.allocator.free(implementation_path);
@@ -257,9 +273,10 @@ fn serveTopicDetails(
     app: *App,
     request: *std.http.Server.Request,
     category_id: []const u8,
-    topic_id: []const u8,
+    group_id: []const u8,
+    problem_id: []const u8,
 ) !void {
-    const topic_path = try checkedTopicPath(app, category_id, topic_id);
+    const topic_path = try checkedProblemPath(app, category_id, group_id, problem_id);
     defer app.allocator.free(topic_path);
     const metadata_path = try std.fs.path.join(app.allocator, &.{ topic_path, "topic.json" });
     defer app.allocator.free(metadata_path);
@@ -280,7 +297,9 @@ fn serveTopicDetails(
     var json: std.json.Stringify = .{ .writer = &output.writer, .options = .{} };
     try json.beginObject();
     try json.objectField("id");
-    try json.write(topic_id);
+    try json.write(group_id);
+    try json.objectField("problem");
+    try json.write(problem_id);
     try json.objectField("category");
     try json.write(category_id);
     try json.objectField("metadata");
@@ -298,6 +317,8 @@ fn serveTopicDetails(
         try json.write(active.category());
         try json.objectField("topic");
         try json.write(active.topic());
+        try json.objectField("problem");
+        try json.write(active.problem());
         try json.objectField("state");
         try json.write(@tagName(active.state));
         try json.endObject();
@@ -345,10 +366,11 @@ fn startAttempt(
     app: *App,
     request: *std.http.Server.Request,
     category_id: []const u8,
-    topic_id: []const u8,
+    group_id: []const u8,
+    problem_id: []const u8,
     source_attempt_id: ?[]const u8,
 ) !void {
-    const topic_path = try checkedTopicPath(app, category_id, topic_id);
+    const topic_path = try checkedProblemPath(app, category_id, group_id, problem_id);
     defer app.allocator.free(topic_path);
     const metadata_path = try std.fs.path.join(app.allocator, &.{ topic_path, "topic.json" });
     defer app.allocator.free(metadata_path);
@@ -391,10 +413,11 @@ fn startAttempt(
     const attempt = app.attempt_store.start(
         app.io,
         category_id,
-        topic_id,
+        group_id,
+        problem_id,
         "cpp",
-        parsed.value.target_seconds,
-        parsed.value.warning_seconds,
+        parsed.value.green_seconds,
+        parsed.value.yellow_seconds,
     ) catch |err| switch (err) {
         error.AttemptAlreadyActive => return respondApiError(request, .conflict, "attempt_already_active"),
         else => return err,
@@ -416,8 +439,8 @@ fn runAttempt(app: *App, request: *std.http.Server.Request, attempt_id: []const 
     var status: []const u8 = runner.rate(
         result.passed,
         elapsed_ms,
-        attempt.target_seconds,
-        attempt.warning_seconds,
+        attempt.green_seconds,
+        attempt.yellow_seconds,
     );
     if (submit) {
         if (!result.passed) {
@@ -437,6 +460,8 @@ fn runAttempt(app: *App, request: *std.http.Server.Request, attempt_id: []const 
     try json.write(result.passed);
     try json.objectField("phase");
     try json.write(@tagName(result.phase));
+    try json.objectField("outcome");
+    try json.write(@tagName(result.outcome));
     try json.objectField("status");
     try json.write(status);
     try json.objectField("elapsed_ms");
@@ -471,6 +496,8 @@ fn respondAttempt(
     try json.write(attempt.category());
     try json.objectField("topic");
     try json.write(attempt.topic());
+    try json.objectField("problem");
+    try json.write(attempt.problem());
     try json.objectField("language");
     try json.write(attempt.language());
     try json.objectField("state");
@@ -480,20 +507,24 @@ fn respondAttempt(
     try json.objectField("elapsed_ms");
     try json.write(attempt.elapsedMs(app.io));
     try json.objectField("target_seconds");
-    try json.write(attempt.target_seconds);
+    try json.write(attempt.green_seconds);
     try json.objectField("warning_seconds");
-    try json.write(attempt.warning_seconds);
+    try json.write(attempt.yellow_seconds);
+    try json.objectField("green_seconds");
+    try json.write(attempt.green_seconds);
+    try json.objectField("yellow_seconds");
+    try json.write(attempt.yellow_seconds);
     try json.objectField("reference_viewed");
     try json.write(attempt.reference_viewed);
     try json.objectField("reveal_available");
-    try json.write(attempt.elapsedMs(app.io) >= @as(i64, attempts.reveal_seconds) * 1000);
+    try json.write(attempt.elapsedMs(app.io) >= @as(i64, attempt.yellow_seconds) * 1000);
     try json.endObject();
     return respondJson(request, output.written(), .ok);
 }
 
-fn checkedTopicPath(app: *App, category_id: []const u8, topic_id: []const u8) ![:0]u8 {
-    if (!validTopic(category_id, topic_id)) return error.InvalidTopic;
-    const unresolved = try std.fs.path.join(app.allocator, &.{ app.root_path, category_id, topic_id });
+fn checkedProblemPath(app: *App, category_id: []const u8, group_id: []const u8, problem_id: []const u8) ![:0]u8 {
+    if (!validTopic(category_id, group_id) or !catalog.validId(problem_id)) return error.InvalidTopic;
+    const unresolved = try std.fs.path.join(app.allocator, &.{ app.root_path, category_id, group_id, "problems", problem_id });
     defer app.allocator.free(unresolved);
     const resolved = try Io.Dir.cwd().realPathFileAlloc(app.io, unresolved, app.allocator);
     errdefer app.allocator.free(resolved);

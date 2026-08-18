@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Wildcard Pattern Matching","description":"Determine whether a complete text matches a pattern with '?' and '*' wildcards.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["dynamic-programming","wildcard_matching"]}

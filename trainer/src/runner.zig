@@ -3,9 +3,11 @@ const Io = std.Io;
 const Attempt = @import("attempts.zig").Attempt;
 
 pub const Phase = enum { compilation, testing };
+pub const Outcome = enum { passed, test_failed, compiler_error, time_limit_exceeded, runtime_error };
 
 pub const Result = struct {
     phase: Phase,
+    outcome: Outcome,
     passed: bool,
     stdout: []u8,
     stderr: []u8,
@@ -29,7 +31,7 @@ pub fn run(
 ) !Result {
     if (!std.mem.eql(u8, attempt.language(), "cpp")) return error.UnsupportedLanguage;
 
-    const topic_path = try std.fs.path.join(allocator, &.{ root_path, attempt.category(), attempt.topic() });
+    const topic_path = try problemPath(allocator, root_path, attempt);
     defer allocator.free(topic_path);
     const attempt_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", "attempt.cpp" });
     defer allocator.free(attempt_path);
@@ -66,11 +68,13 @@ pub fn run(
         error.Timeout => return failureResult(
             allocator,
             .compilation,
+            .time_limit_exceeded,
             "Compilation timed out after 15 seconds.\n",
         ),
         error.StreamTooLong => return failureResult(
             allocator,
             .compilation,
+            .compiler_error,
             "Compiler output exceeded the 256 KiB limit.\n",
         ),
         else => return err,
@@ -78,6 +82,7 @@ pub fn run(
     if (!termSucceeded(compile.term)) {
         return .{
             .phase = .compilation,
+            .outcome = .compiler_error,
             .passed = false,
             .stdout = compile.stdout,
             .stderr = compile.stderr,
@@ -93,17 +98,20 @@ pub fn run(
         error.Timeout => return failureResult(
             allocator,
             .testing,
+            .time_limit_exceeded,
             "Execution timed out after 5 seconds. Check for an infinite loop or blocked input.\n",
         ),
         error.StreamTooLong => return failureResult(
             allocator,
             .testing,
+            .runtime_error,
             "Test output exceeded the 256 KiB limit. Check for an infinite loop that prints output.\n",
         ),
         else => return err,
     };
     return .{
         .phase = .testing,
+        .outcome = if (termSucceeded(test_result.term)) .passed else .test_failed,
         .passed = termSucceeded(test_result.term),
         .stdout = test_result.stdout,
         .stderr = test_result.stderr,
@@ -175,6 +183,7 @@ fn runMeasured(
 fn failureResult(
     allocator: std.mem.Allocator,
     phase: Phase,
+    outcome: Outcome,
     message: []const u8,
 ) !Result {
     const stdout = try allocator.alloc(u8, 0);
@@ -182,6 +191,7 @@ fn failureResult(
     const stderr = try allocator.dupe(u8, message);
     return .{
         .phase = phase,
+        .outcome = outcome,
         .passed = false,
         .stdout = stdout,
         .stderr = stderr,
@@ -199,10 +209,12 @@ pub fn persistResult(
     result: *const Result,
     elapsed_ms: i64,
 ) ![]const u8 {
-    const status = rate(result.passed, elapsed_ms, attempt.target_seconds, attempt.warning_seconds);
+    const status = rate(result.passed, elapsed_ms, attempt.green_seconds, attempt.yellow_seconds);
+    const topic_path = try problemPath(allocator, root_path, attempt);
+    defer allocator.free(topic_path);
     const progress_path = try std.fs.path.join(
         allocator,
-        &.{ root_path, attempt.category(), attempt.topic(), "progress" },
+        &.{ topic_path, "progress" },
     );
     defer allocator.free(progress_path);
     try Io.Dir.cwd().createDirPath(io, progress_path);
@@ -214,7 +226,7 @@ pub fn persistResult(
     defer allocator.free(snapshot_filename);
     const snapshot_path = try std.fs.path.join(allocator, &.{ snapshots_path, snapshot_filename });
     defer allocator.free(snapshot_path);
-    const workspace_path = try std.fs.path.join(allocator, &.{ root_path, attempt.category(), attempt.topic(), "workspace", "attempt.cpp" });
+    const workspace_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", "attempt.cpp" });
     defer allocator.free(workspace_path);
     const source = try Io.Dir.cwd().readFileAlloc(io, workspace_path, allocator, .limited(1024 * 1024));
     defer allocator.free(source);
@@ -244,6 +256,8 @@ pub fn persistResult(
     try json.write(status);
     try json.objectField("phase");
     try json.write(@tagName(result.phase));
+    try json.objectField("outcome");
+    try json.write(@tagName(result.outcome));
     try json.endObject();
     try line_output.writer.writeByte('\n');
 
@@ -278,6 +292,8 @@ pub fn persistResult(
     try summary_json.write(result.passed);
     try summary_json.objectField("status");
     try summary_json.write(status);
+    try summary_json.objectField("outcome");
+    try summary_json.write(@tagName(result.outcome));
     try summary_json.objectField("reference_viewed");
     try summary_json.write(attempt.reference_viewed);
     try summary_json.endObject();
@@ -287,11 +303,15 @@ pub fn persistResult(
     return status;
 }
 
-pub fn rate(passed: bool, elapsed_ms: i64, target_seconds: u32, warning_seconds: u32) []const u8 {
+pub fn rate(passed: bool, elapsed_ms: i64, green_seconds: u32, yellow_seconds: u32) []const u8 {
     if (!passed) return "red";
-    if (elapsed_ms <= @as(i64, target_seconds) * 1000) return "green";
-    if (elapsed_ms <= @as(i64, warning_seconds) * 1000) return "yellow";
+    if (elapsed_ms <= @as(i64, green_seconds) * 1000) return "green";
+    if (elapsed_ms <= @as(i64, yellow_seconds) * 1000) return "yellow";
     return "red";
+}
+
+fn problemPath(allocator: std.mem.Allocator, root_path: []const u8, attempt: *const Attempt) ![]u8 {
+    return std.fs.path.join(allocator, &.{ root_path, attempt.category(), attempt.topic(), "problems", attempt.problem() });
 }
 
 fn termSucceeded(term: std.process.Child.Term) bool {
@@ -302,10 +322,10 @@ fn termSucceeded(term: std.process.Child.Term) bool {
 }
 
 test "attempt ratings respect thresholds" {
-    try std.testing.expectEqualStrings("red", rate(false, 10, 300, 450));
-    try std.testing.expectEqualStrings("green", rate(true, 300_000, 300, 450));
-    try std.testing.expectEqualStrings("yellow", rate(true, 300_001, 300, 450));
-    try std.testing.expectEqualStrings("red", rate(true, 450_001, 300, 450));
+    try std.testing.expectEqualStrings("red", rate(false, 10, 300, 600));
+    try std.testing.expectEqualStrings("green", rate(true, 300_000, 300, 600));
+    try std.testing.expectEqualStrings("yellow", rate(true, 300_001, 300, 600));
+    try std.testing.expectEqualStrings("red", rate(true, 600_001, 300, 600));
 }
 
 test "measured process reports runtime and peak memory" {

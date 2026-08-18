@@ -5,7 +5,6 @@
   "difficulty": "easy",
   "languages": ["cpp"],
   "green_seconds": 300,
-  "yellow_seconds": 450,
-  "red_seconds": 450,
+  "yellow_seconds": 600,
   "tags": ["array", "hash-table"]
 }

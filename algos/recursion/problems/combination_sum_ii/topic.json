@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Combination Sum II","description":"Find unique combinations that reach a target, using each candidate at most once.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["recursion","backtracking","deduplication"]}

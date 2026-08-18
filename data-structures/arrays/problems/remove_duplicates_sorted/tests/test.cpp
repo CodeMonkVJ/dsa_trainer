@@ -5,20 +5,46 @@ using namespace std;
 #undef main
 
 int passed = 0, total = 0;
-void check(bool ok, const char* name) { ++total; if (ok) ++passed; cout << (ok ? "PASS " : "FAIL ") << name << '\n'; }
+void check(const vector<int> &input, int expected,
+           const vector<int> &expectedValues, const char *name) {
+  vector<int> actualValues = input;
+  const int actual = removeDuplicatesSorted(actualValues);
+  actualValues.resize(actual);
+  ++total;
+  cout << "DSA_CASE {\"input\":{\"values\":[";
+  for (size_t i = 0; i < input.size(); ++i) {
+    if (i)
+      cout << ',';
+    cout << input[i];
+  }
+  cout << "]},\"expected\":{\"count\":" << expected << ",\"values\":[";
+  for (size_t i = 0; i < expectedValues.size(); ++i) {
+    if (i)
+      cout << ',';
+    cout << expectedValues[i];
+  }
+  cout << "]},\"actual\":{\"count\":" << actual << ",\"values\":[";
+  for (size_t i = 0; i < actualValues.size(); ++i) {
+    if (i)
+      cout << ',';
+    cout << actualValues[i];
+  }
+  cout << "]},\"passed\":"
+       << (actual == expected && actualValues == expectedValues ? "true"
+                                                                : "false")
+       << "}\n";
+  const bool ok = actual == expected && actualValues == expectedValues;
+  if (ok)
+    ++passed;
+  cout << (ok ? "PASS " : "FAIL ") << name << '\n';
+}
 
 int main() {
-  vector<int> nums{0, 0, 1, 1, 1, 2, 2, 3};
-  int k = removeDuplicatesSorted(nums);
-  check(k == 4 && vector<int>(nums.begin(), nums.begin() + k) == vector<int>{0, 1, 2, 3}, "compacts repeated values");
-  nums = {5, 5, 5};
-  k = removeDuplicatesSorted(nums);
-  check(k == 1 && nums[0] == 5, "reduces an all-equal input");
-  nums = {-2, 0, 4};
-  k = removeDuplicatesSorted(nums);
-  check(k == 3 && vector<int>(nums.begin(), nums.begin() + k) == vector<int>{-2, 0, 4}, "keeps an already unique input");
-  nums.clear();
-  check(removeDuplicatesSorted(nums) == 0, "handles an empty input");
-  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total << "}\n";
+  check({0, 0, 1, 1, 1, 2, 2, 3}, 4, {0, 1, 2, 3}, "compacts repeated values");
+  check({5, 5, 5}, 1, {5}, "reduces an all-equal input");
+  check({-2, 0, 4}, 3, {-2, 0, 4}, "keeps an already unique input");
+  check({}, 0, {}, "handles an empty input");
+  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total
+       << "}\n";
   return passed == total ? 0 : 1;
 }

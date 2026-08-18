@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Word Break","description":"Determine whether a complete text can be segmented into dictionary words.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["trie","word_break"]}

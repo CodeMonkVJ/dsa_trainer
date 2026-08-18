@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Combination Sum","description":"Find combinations of candidates that add to a target, reusing values as needed.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["recursion","backtracking","combinations"]}

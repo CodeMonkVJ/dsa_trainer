@@ -1,0 +1,2 @@
+{"schema_version":1,"name":"Word Break","description":"Determine whether a string can be segmented into one or more dictionary words.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["dynamic-programming","strings","word-break"]}
+

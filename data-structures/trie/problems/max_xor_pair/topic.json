@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Maximum XOR of Two Numbers","description":"Return the maximum XOR obtainable from two distinct array values.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["trie","max_xor_pair"]}

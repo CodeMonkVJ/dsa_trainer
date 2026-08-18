@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Construct Tree from Inorder and Postorder","description":"Reconstruct a binary tree from its inorder and postorder traversals.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["binary-tree","construction","traversal"]}

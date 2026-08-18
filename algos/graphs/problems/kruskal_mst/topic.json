@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Minimum Spanning Tree using Kruskal","description":"Return the weight of a minimum spanning tree using Kruskal's algorithm.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["graph","kruskal_mst"]}

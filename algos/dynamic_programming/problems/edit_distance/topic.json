@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Edit Distance","description":"Return the minimum edit operations needed to transform one string into another.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["dynamic-programming","edit_distance"]}

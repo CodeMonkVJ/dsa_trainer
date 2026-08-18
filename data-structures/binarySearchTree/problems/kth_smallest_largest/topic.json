@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"K-th Smallest and Largest in a BST","description":"Return the k-th smallest and k-th largest keys in a binary search tree using inorder ordering.","difficulty":"medium","languages":["cpp"],"green_seconds":600,"yellow_seconds":1200,"tags":["tree","binary-search-tree","inorder"]}

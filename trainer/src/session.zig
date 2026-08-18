@@ -87,7 +87,14 @@ pub fn terminate(
 ) !void {
     const name = try sessionName(allocator, attempt);
     defer allocator.free(name);
-    if (try hasSession(allocator, io, name)) try killSession(allocator, io, name);
+    if (!try hasSession(allocator, io, name)) return;
+    killSession(allocator, io, name) catch |err| {
+        // The attached terminal can remove the session while cancellation is
+        // racing with the websocket close. Treat that already-gone state as
+        // successfully terminated, but surface any session that still exists.
+        if (err == error.TmuxCommandFailed and !try hasSession(allocator, io, name)) return;
+        return err;
+    };
 }
 
 pub fn open(
@@ -147,7 +154,7 @@ fn createSession(
     columns: u16,
     rows: u16,
 ) !void {
-    const topic_path = try std.fs.path.join(allocator, &.{ root_path, attempt.category(), attempt.topic() });
+    const topic_path = try problemPath(allocator, root_path, attempt);
     defer allocator.free(topic_path);
     const attempt_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", "attempt.cpp" });
     defer allocator.free(attempt_path);
@@ -203,8 +210,10 @@ fn createSession(
 }
 
 fn hasSession(allocator: std.mem.Allocator, io: Io, name: []const u8) !bool {
+    const target = try exactTarget(allocator, name);
+    defer allocator.free(target);
     var result = try std.process.run(allocator, io, .{
-        .argv = &.{ "tmux", "has-session", "-t", name },
+        .argv = &.{ "tmux", "has-session", "-t", target },
         .stdout_limit = .limited(4096),
         .stderr_limit = .limited(4096),
     });
@@ -213,8 +222,10 @@ fn hasSession(allocator: std.mem.Allocator, io: Io, name: []const u8) !bool {
 }
 
 fn paneDead(allocator: std.mem.Allocator, io: Io, name: []const u8) !bool {
+    const target = try exactTarget(allocator, name);
+    defer allocator.free(target);
     var result = try std.process.run(allocator, io, .{
-        .argv = &.{ "tmux", "list-panes", "-t", name, "-F", "#{pane_dead}" },
+        .argv = &.{ "tmux", "list-panes", "-t", target, "-F", "#{pane_dead}" },
         .stdout_limit = .limited(4096),
         .stderr_limit = .limited(4096),
     });
@@ -224,7 +235,13 @@ fn paneDead(allocator: std.mem.Allocator, io: Io, name: []const u8) !bool {
 }
 
 fn killSession(allocator: std.mem.Allocator, io: Io, name: []const u8) !void {
-    try runTmuxCommand(allocator, io, &.{ "tmux", "kill-session", "-t", name });
+    const target = try exactTarget(allocator, name);
+    defer allocator.free(target);
+    try runTmuxCommand(allocator, io, &.{ "tmux", "kill-session", "-t", target });
+}
+
+fn exactTarget(allocator: std.mem.Allocator, name: []const u8) ![]u8 {
+    return std.fmt.allocPrint(allocator, "={s}", .{name});
 }
 
 fn runTmuxCommand(allocator: std.mem.Allocator, io: Io, argv: []const []const u8) !void {
@@ -239,6 +256,10 @@ fn runTmuxCommand(allocator: std.mem.Allocator, io: Io, argv: []const []const u8
 
 fn sessionName(allocator: std.mem.Allocator, attempt: *const Attempt) ![]u8 {
     return std.fmt.allocPrint(allocator, "dsa_{s}", .{attempt.id()});
+}
+
+fn problemPath(allocator: std.mem.Allocator, root_path: []const u8, attempt: *const Attempt) ![]u8 {
+    return std.fs.path.join(allocator, &.{ root_path, attempt.category(), attempt.topic(), "problems", attempt.problem() });
 }
 
 fn shellQuote(writer: *Io.Writer, value: []const u8) !void {

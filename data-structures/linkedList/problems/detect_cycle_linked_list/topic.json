@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "name": "Detect Cycle in a Linked List",
+  "description": "Detect whether a singly linked list cycles and return the node where the cycle begins.",
+  "difficulty": "medium",
+  "languages": ["cpp"],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": ["linked-list", "fast-slow-pointers", "cycle-detection"]
+}

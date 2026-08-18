@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Flood Fill Algorithm","description":"Recolor the connected component containing a starting cell in a grid.","difficulty":"easy","languages":["cpp"],"green_seconds":300,"yellow_seconds":600,"tags":["graphs","bfs","matrix"]}

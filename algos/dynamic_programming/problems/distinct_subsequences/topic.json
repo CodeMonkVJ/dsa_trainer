@@ -1,0 +1,1 @@
+{"schema_version":1,"name":"Distinct Subsequences","description":"Count the distinct index selections that form a target subsequence from a source string.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["dynamic-programming","distinct_subsequences"]}
