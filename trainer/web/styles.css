@@ -45,6 +45,10 @@ h2 { margin: 0; font-size: 1rem; }
 .problem-link.selected { border-color: var(--blue); color: var(--blue); background: color-mix(in srgb, var(--blue) 10%, var(--surface)); }
 .problem-link { display: inline-flex; align-items: center; gap: 8px; }
 .problem-difficulty, .difficulty-badge { color: var(--muted); font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.problem-solved { color: var(--muted); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.problem-solved.green { color: var(--green); }
+.problem-solved.yellow { color: var(--yellow); }
+.problem-solved.red { color: var(--red); }
 .difficulty-badge { display: inline-block; padding: 4px 7px; border: 1px solid var(--border); border-radius: 4px; vertical-align: middle; }
 .difficulty-badge.easy, .problem-difficulty.easy { color: var(--green); }
 .difficulty-badge.medium, .problem-difficulty.medium { color: var(--yellow); }

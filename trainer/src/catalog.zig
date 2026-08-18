@@ -20,6 +20,11 @@ const ProgressSummary = struct {
     passed: ?bool = null,
 };
 
+const ProblemProgress = struct {
+    solved: bool,
+    status: []const u8,
+};
+
 pub fn writeCatalog(
     allocator: std.mem.Allocator,
     io: Io,
@@ -203,6 +208,11 @@ fn writeValidTopic(
     try json.write(metadata.tags);
     try json.objectField("problems");
     try json.beginArray();
+    var problem_count: u32 = 0;
+    var solved_count: u32 = 0;
+    const base_progress = problemProgress(allocator, io, category_dir, group_id, "base");
+    problem_count += 1;
+    if (base_progress.solved) solved_count += 1;
     try json.beginObject();
     try json.objectField("id");
     try json.write("base");
@@ -212,6 +222,10 @@ fn writeValidTopic(
     try json.write(metadata.description);
     try json.objectField("difficulty");
     try json.write(metadata.difficulty);
+    try json.objectField("solved");
+    try json.write(base_progress.solved);
+    try json.objectField("status");
+    try json.write(base_progress.status);
     try json.endObject();
     const problems_path = try std.fs.path.join(allocator, &.{ group_id, "problems" });
     defer allocator.free(problems_path);
@@ -230,9 +244,16 @@ fn writeValidTopic(
                 std.mem.eql(u8, entry.name, "stock_buy_sell") or
                 std.mem.eql(u8, entry.name, "wildcard_matching"))) continue;
         if (std.mem.eql(u8, group_id, "trie") and std.mem.eql(u8, entry.name, "word_break")) continue;
-        try writeProblemRef(allocator, io, problems_dir, entry.name, json);
+        const progress = problemProgress(allocator, io, category_dir, group_id, entry.name);
+        problem_count += 1;
+        if (progress.solved) solved_count += 1;
+        try writeProblemRef(allocator, io, problems_dir, entry.name, progress, json);
     }
     try json.endArray();
+    try json.objectField("solved_count");
+    try json.write(solved_count);
+    try json.objectField("problem_count");
+    try json.write(problem_count);
     try json.objectField("status");
     try json.write(status);
     try json.objectField("elapsed_ms");
@@ -246,7 +267,7 @@ fn writeValidTopic(
     try json.endObject();
 }
 
-fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, problem_id: []const u8, json: *std.json.Stringify) !void {
+fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, problem_id: []const u8, progress: ProblemProgress, json: *std.json.Stringify) !void {
     const metadata_path = try std.fs.path.join(allocator, &.{ problem_id, "topic.json" });
     defer allocator.free(metadata_path);
     const bytes = problems_dir.readFileAlloc(io, metadata_path, allocator, .limited(128 * 1024)) catch return;
@@ -264,11 +285,27 @@ fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, p
     try json.write(metadata.description);
     try json.objectField("difficulty");
     try json.write(metadata.difficulty);
+    try json.objectField("solved");
+    try json.write(progress.solved);
+    try json.objectField("status");
+    try json.write(progress.status);
     try json.objectField("green_seconds");
     try json.write(metadata.green_seconds);
     try json.objectField("yellow_seconds");
     try json.write(metadata.yellow_seconds);
     try json.endObject();
+}
+
+fn problemProgress(allocator: std.mem.Allocator, io: Io, category_dir: Io.Dir, group_id: []const u8, problem_id: []const u8) ProblemProgress {
+    const empty = ProblemProgress{ .solved = false, .status = "gray" };
+    const summary_path = std.fs.path.join(allocator, &.{ group_id, "problems", problem_id, "progress", "summary.json" }) catch return empty;
+    defer allocator.free(summary_path);
+    const bytes = category_dir.readFileAlloc(io, summary_path, allocator, .limited(128 * 1024)) catch return empty;
+    defer allocator.free(bytes);
+    var parsed = std.json.parseFromSlice(ProgressSummary, allocator, bytes, .{ .ignore_unknown_fields = true }) catch return empty;
+    defer parsed.deinit();
+    const status = if (std.mem.eql(u8, parsed.value.status, "green")) "green" else if (std.mem.eql(u8, parsed.value.status, "yellow")) "yellow" else if (std.mem.eql(u8, parsed.value.status, "red")) "red" else "gray";
+    return .{ .solved = parsed.value.passed orelse false, .status = status };
 }
 
 fn writeInvalidTopic(

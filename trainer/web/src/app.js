@@ -17,6 +17,7 @@ const elements = {
   topicDifficulty: document.querySelector('#topic-difficulty'),
   topicPrompt: document.querySelector('#topic-prompt'),
   problemPicker: document.querySelector('#problem-picker'),
+  topicProblemSummary: document.querySelector('#topic-problem-summary'),
   terminal: document.querySelector('#terminal'),
   terminalOverlay: document.querySelector('#terminal-overlay'),
   start: document.querySelector('#start-button'),
@@ -96,6 +97,12 @@ function renderTopic(category, topic) {
   const details = document.createElement('p');
   details.textContent = topic.invalid ? `Not configured: ${topic.error}` : topic.description;
   card.append(heading, details);
+  if (!topic.invalid && topic.problem_count != null) {
+    const problemSummary = document.createElement('span');
+    problemSummary.className = 'topic-problem-summary';
+    problemSummary.textContent = `${topic.solved_count ?? 0} / ${topic.problem_count} solved`;
+    card.append(problemSummary);
+  }
   if (!topic.invalid && topic.elapsed_ms != null) {
     const progress = document.createElement('div');
     progress.className = `topic-progress ${topic.status ?? 'gray'}`;
@@ -143,6 +150,9 @@ function renderProblemPicker(category, group) {
   const categoryEntry = state.catalog?.categories.find((entry) => entry.id === category);
   const topic = categoryEntry?.topics.find((entry) => entry.id === group);
   const problems = topic?.problems ?? [{ id: 'base', name: 'Base implementation' }];
+  elements.topicProblemSummary.textContent = topic
+    ? `· ${topic.solved_count ?? 0} / ${topic.problem_count ?? problems.length} solved`
+    : '';
   elements.problemPicker.replaceChildren();
   for (const problem of problems) {
     const button = document.createElement('button');
@@ -156,7 +166,15 @@ function renderProblemPicker(category, group) {
     const difficulty = document.createElement('small');
     difficulty.textContent = problem.difficulty ?? '';
     difficulty.className = `problem-difficulty ${problem.difficulty ?? ''}`;
-    button.append(name, difficulty);
+    if (problem.solved) {
+      const solved = document.createElement('small');
+      solved.className = `problem-solved ${problem.status ?? 'gray'}`;
+      solved.textContent = '✓ Solved';
+      solved.title = `Solved in ${problem.status ?? 'unknown'} time`;
+      button.append(name, difficulty, solved);
+    } else {
+      button.append(name, difficulty);
+    }
     button.classList.toggle('selected', problem.id === (state.selectedTopic.problem ?? 'base'));
     button.addEventListener('click', () => openTopic(category, group, problem.id));
     elements.problemPicker.append(button);
