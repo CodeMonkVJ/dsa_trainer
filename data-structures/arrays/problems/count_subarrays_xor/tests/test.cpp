@@ -26,9 +26,42 @@ void check(const vector<int> &values, int target, int expected,
 
 int main() {
   check({4, 2, 2, 6, 4}, 6, 4, "counts the standard example");
+  
   check({5, 5, 5}, 0, 2, "counts multiple equal-prefix ranges");
+  
   check({1, 2, 3}, 7, 0, "returns zero with no matching range");
+  
   check({}, 0, 0, "handles an empty input");
+  
+  check({6}, 6, 1, "single element matches target");
+  
+  check({6}, 0, 0, "single element does not match zero target");
+  
+  check({0}, 0, 1, "single zero matches zero target");
+  
+  check({0, 0, 0}, 0, 6, "all zero subarrays match zero target");
+  
+  check({1, 1}, 0, 1, "two equal values xor to zero");
+  
+  check({1, 1, 1}, 1, 4, "counts repeated matching prefixes");
+  
+  check({1, 2, 3}, 0, 1, "counts full-array xor zero");
+  
+  check({2, 2, 2, 2}, 0, 4, "counts even-length zero-xor ranges");
+  
+  check({2, 2, 2, 2}, 2, 6, "counts odd-length target-xor ranges");
+  
+  check({1, 2, 1, 2, 1}, 3, 4, "counts overlapping xor ranges");
+  
+  check({8, 1, 8, 1, 8}, 9, 4, "counts alternating xor ranges");
+  
+  check({-1}, -1, 1, "handles negative integer xor");
+  
+  check({-1, -1}, 0, 1, "negative equal values xor to zero");
+  
+  check({3, 3, 3, 3, 3}, 3, 9, "many repeated target matches");
+  
+  check({7, 0, 7}, 0, 2, "zero target with repeated prefix xor");
   cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total
        << "}\n";
   return passed == total ? 0 : 1;

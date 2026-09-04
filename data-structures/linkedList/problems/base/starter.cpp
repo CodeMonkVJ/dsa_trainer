@@ -6,7 +6,7 @@ class SinglyLinkedList {
 public:
   ~SinglyLinkedList() {}
   void pushFront(int) {}
-  bool insertAfter(int, int) { return false; }
+  bool insertAfter(int currVal, int newVal) { return false; }
   bool removeFirst(int) { return false; }
   void reverse() {}
   bool contains(int) const { return false; }
