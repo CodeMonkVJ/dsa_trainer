@@ -2,9 +2,9 @@
   "schema_version": 1,
   "name": "Merge Two BSTs",
   "description": "Return the sorted keys present in either of two binary search trees.",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "languages": ["cpp"],
-  "green_seconds": 600,
-  "yellow_seconds": 1200,
+  "green_seconds": 300,
+  "yellow_seconds": 600,
   "tags": ["binary-search-tree", "inorder", "merge"]
 }

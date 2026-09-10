@@ -1,0 +1,17 @@
+#include <bits/stdc++.h>
+#include <queue>
+using namespace std;
+
+int kthLargest(const vector<int> &values, int k) {
+  priority_queue<int, vector<int>, greater<int>> minHeap;
+  int n = values.size();
+  if (n == 0 || k > n || k <= 0)
+    return -1;
+  for (auto x : values) {
+    minHeap.push(x);
+    if (minHeap.size() > k)
+      minHeap.pop();
+  }
+
+  return minHeap.top();
+}
