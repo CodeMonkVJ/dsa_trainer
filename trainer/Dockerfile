@@ -54,26 +54,27 @@ RUN case "${TARGETARCH}" in \
     && rm /tmp/nvim.tar.gz
 
 
-WORKDIR /opt/dsa-trainer
-COPY --from=zig-build /build/zig-out/bin/dsa-trainer ./bin/dsa-trainer
+WORKDIR /opt/interview-trainer
+COPY --from=zig-build /build/zig-out/bin/interview-trainer ./bin/interview-trainer
 COPY --from=web-build /build/web/index.html ./web/index.html
 COPY --from=web-build /build/web/styles.css ./web/styles.css
 COPY --from=web-build /build/web/dist ./web/dist
 COPY nvim ./nvim
+COPY rtos ./rtos
 COPY nvim-config ./nvim-config
 COPY docker/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
-ENV XDG_CONFIG_HOME=/opt/dsa-trainer/nvim-config \
-    XDG_DATA_HOME=/opt/dsa-trainer/nvim-data
+ENV XDG_CONFIG_HOME=/opt/interview-trainer/nvim-config \
+    XDG_DATA_HOME=/opt/interview-trainer/nvim-data
 
 RUN nvim --headless "+Lazy! sync" +qa
 
 ENV DSA_ROOT=/workspace \
     PORT=8080 \
-    TRAINER_PATH=/opt/dsa-trainer \
+    TRAINER_PATH=/opt/interview-trainer \
     BIND_HOST=0.0.0.0
 
 VOLUME ["/workspace"]
 EXPOSE 8080
-ENTRYPOINT ["/opt/dsa-trainer/entrypoint.sh"]
+ENTRYPOINT ["/opt/interview-trainer/entrypoint.sh"]

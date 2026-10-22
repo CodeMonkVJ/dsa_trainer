@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Hexadecimal Parser",
+  "description": "Parse bounded hexadecimal text with explicit error results.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

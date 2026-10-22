@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Deadlock-Free Dining Philosophers",
+  "description": "Acquire shared resources in a global order and release partial acquisitions on timeout.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

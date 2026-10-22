@@ -23,6 +23,7 @@ const ProgressSummary = struct {
 const ProblemProgress = struct {
     solved: bool,
     status: []const u8,
+    attempted: bool = false,
 };
 
 pub fn writeCatalog(
@@ -39,6 +40,7 @@ pub fn writeCatalog(
     inline for (.{
         .{ "algos", "Algorithms" },
         .{ "data-structures", "Data Structures" },
+        .{ "systems", "Low Level Coding" },
     }) |category| {
         try writeCategory(allocator, io, root_path, category[0], category[1], &json);
     }
@@ -171,7 +173,11 @@ fn writeValidTopic(
     try json.objectField("category");
     try json.write(category_id);
     try json.objectField("name");
-    if (std.mem.eql(u8, group_id, "greedy")) {
+    if (std.mem.eql(u8, category_id, "systems") and std.mem.eql(u8, group_id, "design")) {
+        try json.write("Systems Design");
+    } else if (std.mem.eql(u8, category_id, "systems") and std.mem.eql(u8, group_id, "rtos")) {
+        try json.write("RTOS Practice");
+    } else if (std.mem.eql(u8, group_id, "greedy")) {
         try json.write("Greedy");
     } else if (std.mem.eql(u8, group_id, "recursion")) {
         try json.write("Recursion and Backtracking");
@@ -191,7 +197,7 @@ fn writeValidTopic(
         try json.write(metadata.name);
     }
     try json.objectField("description");
-    try json.write(metadata.description);
+    try json.write(if (std.mem.eql(u8, category_id, "systems") and std.mem.eql(u8, group_id, "design")) "Practice interrupt pipelines, driver APIs, and firmware update architecture with self-review." else if (std.mem.eql(u8, category_id, "systems") and std.mem.eql(u8, group_id, "rtos")) "Practice FreeRTOS scheduling and synchronization on Linux x86, with real POSIX-port harnesses." else metadata.description);
     try json.objectField("difficulty");
     try json.write(metadata.difficulty);
     try json.objectField("languages");
@@ -217,13 +223,17 @@ fn writeValidTopic(
     try json.objectField("id");
     try json.write("base");
     try json.objectField("name");
-    try json.write("Base implementation");
+    try json.write(if (std.mem.eql(u8, category_id, "systems") and (std.mem.eql(u8, group_id, "design") or std.mem.eql(u8, group_id, "rtos"))) metadata.name else "Base implementation");
+    try json.objectField("languages");
+    try json.write(metadata.languages);
     try json.objectField("description");
     try json.write(metadata.description);
     try json.objectField("difficulty");
     try json.write(metadata.difficulty);
     try json.objectField("solved");
     try json.write(base_progress.solved);
+    try json.objectField("attempted");
+    try json.write(base_progress.attempted);
     try json.objectField("status");
     try json.write(base_progress.status);
     try json.endObject();
@@ -279,6 +289,8 @@ fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, p
     try json.beginObject();
     try json.objectField("id");
     try json.write(problem_id);
+    try json.objectField("languages");
+    try json.write(metadata.languages);
     try json.objectField("name");
     try json.write(metadata.name);
     try json.objectField("description");
@@ -287,6 +299,8 @@ fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, p
     try json.write(metadata.difficulty);
     try json.objectField("solved");
     try json.write(progress.solved);
+    try json.objectField("attempted");
+    try json.write(progress.attempted);
     try json.objectField("status");
     try json.write(progress.status);
     try json.objectField("green_seconds");
@@ -297,7 +311,17 @@ fn writeProblemRef(allocator: std.mem.Allocator, io: Io, problems_dir: Io.Dir, p
 }
 
 fn problemProgress(allocator: std.mem.Allocator, io: Io, category_dir: Io.Dir, group_id: []const u8, problem_id: []const u8) ProblemProgress {
-    const empty = ProblemProgress{ .solved = false, .status = "gray" };
+    var empty = ProblemProgress{ .solved = false, .status = "gray" };
+    // Starting any attempt creates a workspace, even if it is later canceled
+    // or never submitted. A solved-only summary misses those attempts.
+    for ([_][]const u8{ "attempt.c", "attempt.cpp", "attempt.md" }) |filename| {
+        const path = std.fs.path.join(allocator, &.{ group_id, "problems", problem_id, "workspace", filename }) catch continue;
+        defer allocator.free(path);
+        if (category_dir.openFile(io, path, .{})) |file| {
+            file.close(io);
+            empty.attempted = true;
+        } else |_| {}
+    }
     const summary_path = std.fs.path.join(allocator, &.{ group_id, "problems", problem_id, "progress", "summary.json" }) catch return empty;
     defer allocator.free(summary_path);
     const bytes = category_dir.readFileAlloc(io, summary_path, allocator, .limited(128 * 1024)) catch return empty;
@@ -305,7 +329,7 @@ fn problemProgress(allocator: std.mem.Allocator, io: Io, category_dir: Io.Dir, g
     var parsed = std.json.parseFromSlice(ProgressSummary, allocator, bytes, .{ .ignore_unknown_fields = true }) catch return empty;
     defer parsed.deinit();
     const status = if (std.mem.eql(u8, parsed.value.status, "green")) "green" else if (std.mem.eql(u8, parsed.value.status, "yellow")) "yellow" else if (std.mem.eql(u8, parsed.value.status, "red")) "red" else "gray";
-    return .{ .solved = parsed.value.passed orelse false, .status = status };
+    return .{ .solved = parsed.value.passed orelse false, .status = status, .attempted = true };
 }
 
 fn writeInvalidTopic(
@@ -344,4 +368,27 @@ test "topic identifiers reject traversal" {
     try std.testing.expect(!validId("../binary_search"));
     try std.testing.expect(!validId("has space"));
     try std.testing.expect(!validId(""));
+}
+
+test "attempted includes unsubmitted C and C++ workspaces and saved summaries" {
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    const io = std.testing.io;
+    const allocator = std.testing.allocator;
+    const fresh = problemProgress(allocator, io, tmp.dir, "group", "fresh");
+    try std.testing.expect(!fresh.attempted and !fresh.solved);
+    inline for (.{ "attempt.c", "attempt.cpp", "attempt.md" }) |filename| {
+        const directory = "group/problems/" ++ filename ++ "/workspace";
+        try tmp.dir.createDirPath(io, directory);
+        try tmp.dir.writeFile(io, .{ .sub_path = directory ++ "/" ++ filename, .data = "" });
+        const progress = problemProgress(allocator, io, tmp.dir, "group", filename);
+        try std.testing.expect(progress.attempted and !progress.solved);
+    }
+    try tmp.dir.createDirPath(io, "group/problems/saved/progress");
+    try tmp.dir.writeFile(io, .{
+        .sub_path = "group/problems/saved/progress/summary.json",
+        .data = "{\"status\":\"red\",\"passed\":false}",
+    });
+    const failed = problemProgress(allocator, io, tmp.dir, "group", "saved");
+    try std.testing.expect(failed.attempted and !failed.solved);
 }

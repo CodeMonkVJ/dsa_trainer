@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Counting Semaphore Resource Pool",
+  "description": "Bound access to a finite number of resources with a counting semaphore.",
+  "difficulty": "easy",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 300,
+  "yellow_seconds": 600,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

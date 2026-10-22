@@ -18,7 +18,7 @@ local function protect_buffer(buffer)
     vim.schedule(function()
       if vim.api.nvim_buf_is_valid(buffer) then
         pcall(vim.api.nvim_buf_delete, buffer, { force = true })
-        vim.notify("Terminal buffers are disabled in DSA practice sessions", vim.log.levels.ERROR)
+        vim.notify("Terminal buffers are disabled in Interview Trainer practice sessions", vim.log.levels.ERROR)
       end
     end)
     return
@@ -32,13 +32,13 @@ end
 
 vim.api.nvim_create_autocmd({ "BufEnter", "BufReadPost", "BufNewFile", "TermOpen" }, {
   callback = function(event) protect_buffer(event.buf) end,
-  desc = "Restrict DSA practice to the active attempt file",
+  desc = "Restrict Interview Trainer practice to the active attempt file",
 })
 
 vim.api.nvim_create_autocmd("BufWritePre", {
   callback = function(event)
     if normalize(vim.api.nvim_buf_get_name(event.buf)) ~= attempt then
-      error("DSA practice may only write the active attempt file")
+      error("Interview Trainer practice may only write the active attempt file")
     end
   end,
   desc = "Prevent writes outside the active DSA attempt",

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "name": "Bounded Producer–Consumer Queue",
+  "description": "Build a blocking pthread FIFO with correct wait predicates, synchronized shutdown, and explicit payload ownership.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "c",
+    "concurrency",
+    "pthreads",
+    "ownership"
+  ]
+}

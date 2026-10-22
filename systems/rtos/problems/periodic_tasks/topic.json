@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Periodic Tasks Without Drift",
+  "description": "Use absolute tick deadlines and handle missed releases and unsigned wraparound.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

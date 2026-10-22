@@ -38,6 +38,10 @@ h2 { margin: 0; font-size: 1rem; }
 .problem-picker-panel { grid-column: 1 / -1; padding: 14px 16px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); }
 .problem-picker-panel .eyebrow { margin: 0 0 8px; }
 .problem-picker { display: flex; flex-wrap: wrap; gap: 6px; }
+.problem-filters { display: flex; flex-wrap: wrap; gap: 16px; margin: 0 0 20px; }
+.problem-filters label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; color: var(--muted); font-size: 0.8rem; }
+.problem-filters select { max-width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font: inherit; }
+.filter-empty { color: var(--muted); font-size: 0.85rem; }
 .problem-link { padding: 7px 10px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); cursor: pointer; font: inherit; font-size: 0.76rem; }
 .problem-link:hover { border-color: var(--blue); color: var(--blue); }
 .problem-link:disabled { cursor: not-allowed; opacity: 0.45; }

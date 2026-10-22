@@ -2,12 +2,15 @@ import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
+import { matchesProblemFilters } from './problem-filters.mjs';
 
 marked.setOptions({ gfm: true });
 
 const elements = {
   status: document.querySelector('#status'),
   catalog: document.querySelector('#catalog'),
+  difficultyFilter: document.querySelector('#difficulty-filter'),
+  attemptFilter: document.querySelector('#attempt-filter'),
   dashboard: document.querySelector('#dashboard-view'),
   practice: document.querySelector('#practice-view'),
   home: document.querySelector('#home-button'),
@@ -71,18 +74,32 @@ async function api(path, options = {}) {
 async function loadCatalog() {
   const catalog = await api('/api/catalog');
   state.catalog = catalog;
-  elements.catalog.replaceChildren(...catalog.categories.map(renderCategory));
-  elements.status.textContent = 'Choose a topic to begin.';
+  renderCatalog();
+  if (state.selectedTopic) renderProblemPicker(state.selectedTopic.category, state.selectedTopic.id);
+}
+
+function filteredProblems(topic) {
+  return (topic.problems ?? []).filter((problem) => matchesProblemFilters(
+    problem, elements.difficultyFilter.value, elements.attemptFilter.value,
+  ));
+}
+
+function renderCatalog() {
+  const categories = (state.catalog?.categories ?? []).map(renderCategory).filter(Boolean);
+  elements.catalog.replaceChildren(...categories);
+  elements.status.textContent = categories.length ? 'Choose a topic to begin.' : 'No problems match these filters.';
 }
 
 function renderCategory(category) {
+  const visibleTopics = category.topics.filter((topic) => !topic.invalid && filteredProblems(topic).length);
+  if (!visibleTopics.length) return null;
   const section = document.createElement('section');
   section.className = 'category';
   const heading = document.createElement('h2');
   heading.textContent = category.name;
   const topics = document.createElement('div');
   topics.className = 'topics';
-  topics.replaceChildren(...category.topics.map((topic) => renderTopic(category, topic)));
+  topics.replaceChildren(...visibleTopics.map((topic) => renderTopic(category, topic)));
   section.append(heading, topics);
   return section;
 }
@@ -114,7 +131,7 @@ function renderTopic(category, topic) {
     card.append(progress);
 
   }
-  if (!topic.invalid) card.addEventListener('click', () => openTopic(category.id, topic.id, 'base'));
+  if (!topic.invalid) card.addEventListener('click', () => openTopic(category.id, topic.id, filteredProblems(topic)[0]?.id ?? 'base'));
   return card;
 }
 
@@ -149,11 +166,17 @@ async function openTopic(category, topic, problem = 'base') {
 function renderProblemPicker(category, group) {
   const categoryEntry = state.catalog?.categories.find((entry) => entry.id === category);
   const topic = categoryEntry?.topics.find((entry) => entry.id === group);
-  const problems = topic?.problems ?? [{ id: 'base', name: 'Base implementation' }];
+  const problems = topic ? filteredProblems(topic) : [];
   elements.topicProblemSummary.textContent = topic
     ? `· ${topic.solved_count ?? 0} / ${topic.problem_count ?? problems.length} solved`
     : '';
   elements.problemPicker.replaceChildren();
+  if (!problems.length) {
+    const empty = document.createElement('p');
+    empty.className = 'filter-empty';
+    empty.textContent = 'No problems match these filters.';
+    elements.problemPicker.append(empty);
+  }
   for (const problem of problems) {
     const button = document.createElement('button');
     button.type = 'button';
@@ -164,13 +187,13 @@ function renderProblemPicker(category, group) {
     const name = document.createElement('span');
     name.textContent = problem.name;
     const difficulty = document.createElement('small');
-    difficulty.textContent = problem.difficulty ?? '';
+    difficulty.textContent = `${problem.difficulty ?? ''}${problem.languages?.includes('md') ? ' · Design' : ''}`;
     difficulty.className = `problem-difficulty ${problem.difficulty ?? ''}`;
     if (problem.solved) {
       const solved = document.createElement('small');
       solved.className = `problem-solved ${problem.status ?? 'gray'}`;
-      solved.textContent = '✓ Solved';
-      solved.title = `Solved in ${problem.status ?? 'unknown'} time`;
+      solved.textContent = problem.languages?.includes('md') ? '✓ Self-reviewed' : '✓ Solved';
+      solved.title = `${problem.languages?.includes('md') ? 'Self-reviewed' : 'Solved'} in ${problem.status ?? 'unknown'} time`;
       button.append(name, difficulty, solved);
     } else {
       button.append(name, difficulty);
@@ -179,6 +202,10 @@ function renderProblemPicker(category, group) {
     button.addEventListener('click', () => openTopic(category, group, problem.id));
     elements.problemPicker.append(button);
   }
+}
+
+function isDesignExercise() {
+  return state.selectedTopic?.metadata.languages.includes('md') ?? false;
 }
 
 function resetHelp() {
@@ -196,8 +223,9 @@ function resetHelp() {
 function renderHistory(history) {
   const attempts = [...history].reverse();
   const passes = attempts.filter((attempt) => attempt.result === 'passed').length;
+  const reviews = attempts.filter((attempt) => attempt.result === 'self_reviewed').length;
   elements.historySummary.textContent = attempts.length
-    ? `${passes} solved · ${attempts.length} submitted`
+    ? `${passes} solved${reviews ? ` · ${reviews} self-reviewed` : ''} · ${attempts.length} submitted`
     : '';
 
   if (!attempts.length) {
@@ -213,7 +241,7 @@ function renderHistory(history) {
     row.className = `history-entry ${attempt.status ?? 'red'}`;
 
     const result = document.createElement('strong');
-    result.textContent = attempt.result === 'passed' ? 'Solved' : 'Failed';
+    result.textContent = attempt.result === 'self_reviewed' ? 'Self-reviewed' : attempt.result === 'passed' ? 'Solved' : 'Failed';
 
     const meta = document.createElement('span');
     meta.textContent = `Submit ${formatDuration(attempt.elapsed_ms)} · Run ${formatRuntime(attempt.runtime_ms)} · ${formatMemory(attempt.peak_memory_bytes)} · ${String(attempt.language ?? '').toUpperCase()}`;
@@ -270,6 +298,10 @@ async function beginAttempt(path) {
   state.testsPassed = false;
   resetHelp();
   localStorage.setItem('dsa-active-attempt', state.attempt.id);
+  const topic = state.catalog?.categories.find((entry) => entry.id === category)?.topics.find((entry) => entry.id === id);
+  const problem = topic?.problems.find((entry) => entry.id === state.selectedTopic.problem);
+  if (problem) problem.attempted = true;
+  renderCatalog();
   localStorage.setItem('dsa-active-topic', JSON.stringify({ category, topic: id, problem: state.selectedTopic.problem }));
   elements.start.disabled = true;
   setAttemptControls(true);
@@ -403,12 +435,14 @@ async function pollAttempt() {
 }
 
 async function runTests(submit) {
-  if (submit && !state.testsPassed) return;
+  const design = isDesignExercise();
+  if (submit && !design && !state.testsPassed) return;
+  if (submit && design && !window.confirm('Save your design as self-reviewed? This records your own assessment, not an automated correctness grade. Save your editor changes first.')) return;
   if (!submit) {
     state.testsPassed = false;
     setAttemptControls(true);
   }
-  elements.testOutput.textContent = submit ? 'Submitting…' : 'Running tests…';
+  elements.testOutput.textContent = submit ? 'Saving…' : design ? 'Loading checklist…' : 'Running tests…';
   elements.testSummary.textContent = '';
   elements.testSummary.className = 'test-summary hidden';
   clearTestCases();
@@ -417,8 +451,8 @@ async function runTests(submit) {
     const result = await api(`/api/attempts/${state.attempt.id}/${submit ? 'submit' : 'run'}`, { method: 'POST' });
     renderTestOutput(result);
     const outcome = result.outcome ?? (result.passed ? 'passed' : result.phase === 'compilation' ? 'compiler_error' : 'test_failed');
-    elements.resultBadge.textContent = result.passed ? `${result.status} · passed` : outcomeLabel(outcome);
-    elements.resultBadge.className = result.passed ? result.status : outcomeClass(outcome);
+    elements.resultBadge.textContent = design ? (submit ? 'Self-reviewed' : 'Manual review required') : result.passed ? `${result.status} · passed` : outcomeLabel(outcome);
+    elements.resultBadge.className = design ? (submit ? result.status : '') : result.passed ? result.status : outcomeClass(outcome);
     if (!submit) {
       state.testsPassed = result.passed;
       setAttemptControls(true);
@@ -441,6 +475,13 @@ async function runTests(submit) {
 }
 
 function renderTestOutput(result) {
+  if (result.phase === 'review') {
+    clearTestCases();
+    elements.testOutput.textContent = result.stdout;
+    elements.testSummary.textContent = 'Design practice: assess your answer against this checklist. No automated grading.';
+    elements.testSummary.className = 'test-summary';
+    return;
+  }
   const stdoutLines = String(result.stdout ?? '').replaceAll('\\n', '\n').split('\n');
   const markerIndex = stdoutLines.findIndex((line) => line.trimStart().startsWith('DSA_RESULT '));
   let testSummary = null;
@@ -630,7 +671,7 @@ async function revealReference() {
 
 function revealImplementation() {
   if (!state.referenceImplementation) return;
-  if (!window.confirm('Reveal the reference implementation? This attempt will be marked as reference-viewed.')) return;
+  if (!window.confirm(`Reveal the reference ${isDesignExercise() ? 'design' : 'implementation'}? This attempt will be marked as reference-viewed.`)) return;
   elements.reference.textContent = state.referenceImplementation;
   elements.reference.classList.remove('hidden');
   elements.answer.disabled = true;
@@ -652,8 +693,12 @@ function finishAttempt() {
 }
 
 function setAttemptControls(active) {
+  const design = isDesignExercise();
+  elements.run.textContent = design ? 'Review checklist' : 'Run tests';
+  elements.submit.textContent = design ? 'Save self-review' : 'Submit';
+  elements.answer.textContent = design ? 'Reveal reference design' : 'Reveal implementation';
   elements.run.disabled = !active;
-  elements.submit.disabled = !active || !state.testsPassed;
+  elements.submit.disabled = !active || (!design && !state.testsPassed);
   elements.cancel.disabled = !active;
 }
 
@@ -699,6 +744,12 @@ elements.home.addEventListener('click', () => {
   elements.practice.classList.add('hidden');
   elements.dashboard.classList.remove('hidden');
 });
+for (const filter of [elements.difficultyFilter, elements.attemptFilter]) {
+  filter.addEventListener('change', () => {
+    renderCatalog();
+    if (state.selectedTopic) renderProblemPicker(state.selectedTopic.category, state.selectedTopic.id);
+  });
+}
 elements.start.addEventListener('click', () => startAttempt().catch((error) => showTerminalOverlay(error.message, true)));
 elements.run.addEventListener('click', () => runTests(false));
 elements.submit.addEventListener('click', () => runTests(true));

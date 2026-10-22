@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "OTA Firmware Updater",
+  "description": "Design authenticated, interruption-safe firmware delivery with trial boot, rollback, compatibility, and staged rollout health.",
+  "difficulty": "hard",
+  "languages": [
+    "md"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "design",
+    "self-review"
+  ]
+}

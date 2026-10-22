@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "ISR-to-Worker Pipeline",
+  "description": "Design a bounded interrupt-to-worker data path with timing budgets, ownership, overflow, synchronization, and shutdown.",
+  "difficulty": "hard",
+  "languages": [
+    "md"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "design",
+    "self-review"
+  ]
+}

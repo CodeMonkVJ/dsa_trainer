@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "Recoverable Record Log",
+  "description": "Encode bounded checksummed records and recover only the intact prefix of a damaged or truncated log.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "c",
+    "memory-and-storage"
+  ]
+}

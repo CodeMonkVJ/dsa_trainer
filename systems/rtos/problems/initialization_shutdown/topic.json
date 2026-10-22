@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Clean Initialization and Shutdown",
+  "description": "Unwind partial task/object creation and stop an idle or busy worker without leaking resources.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

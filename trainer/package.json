@@ -1,5 +1,5 @@
 {
-  "name": "dsa-trainer-web",
+  "name": "interview-trainer-web",
   "private": true,
   "scripts": {
     "build": "esbuild web/src/app.js --bundle --minify --outfile=web/dist/app.js && cp node_modules/@xterm/xterm/css/xterm.css web/dist/xterm.css"

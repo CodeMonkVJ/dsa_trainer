@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Safe Task Startup",
+  "description": "Pass task parameters safely with a copy handshake and clean creation failure handling.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

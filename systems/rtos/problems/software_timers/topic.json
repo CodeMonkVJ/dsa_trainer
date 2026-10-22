@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Software Timers and Deferred Work",
+  "description": "Deliver timer events without blocking the shared timer daemon and shut timers down safely.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

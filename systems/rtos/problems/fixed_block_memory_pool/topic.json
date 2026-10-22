@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Fixed-Block Memory Pool",
+  "description": "Allocate bounded reusable blocks with ownership validation and no per-allocation heap use.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

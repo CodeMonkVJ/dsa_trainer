@@ -1,4 +1,5 @@
 node_modules/
+nvim-data/
 zig-out/
 .zig-cache/
 state/build/

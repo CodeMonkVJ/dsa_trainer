@@ -2,8 +2,8 @@ const std = @import("std");
 const Io = std.Io;
 const Attempt = @import("attempts.zig").Attempt;
 
-pub const Phase = enum { compilation, testing };
-pub const Outcome = enum { passed, test_failed, compiler_error, time_limit_exceeded, runtime_error };
+pub const Phase = enum { compilation, testing, review };
+pub const Outcome = enum { passed, test_failed, compiler_error, time_limit_exceeded, runtime_error, review_required, self_reviewed };
 
 pub const Result = struct {
     phase: Phase,
@@ -29,13 +29,32 @@ pub fn run(
     trainer_path: []const u8,
     attempt: *const Attempt,
 ) !Result {
-    if (!std.mem.eql(u8, attempt.language(), "cpp")) return error.UnsupportedLanguage;
+    if (std.mem.eql(u8, attempt.language(), "md")) {
+        const path = try problemPath(allocator, root_path, attempt);
+        defer allocator.free(path);
+        const review_path = try std.fs.path.join(allocator, &.{ path, "review.md" });
+        defer allocator.free(review_path);
+        const checklist = try Io.Dir.cwd().readFileAlloc(io, review_path, allocator, .limited(128 * 1024));
+        errdefer allocator.free(checklist);
+        return .{
+            .phase = .review,
+            .outcome = .review_required,
+            .passed = false,
+            .stdout = checklist,
+            .stderr = try allocator.alloc(u8, 0),
+            .term = .{ .exited = 0 },
+            .runtime_ms = null,
+            .peak_memory_bytes = null,
+        };
+    }
+    const is_c = std.mem.eql(u8, attempt.language(), "c");
+    if (!is_c and !std.mem.eql(u8, attempt.language(), "cpp")) return error.UnsupportedLanguage;
 
     const topic_path = try problemPath(allocator, root_path, attempt);
     defer allocator.free(topic_path);
-    const attempt_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", "attempt.cpp" });
+    const attempt_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", if (is_c) "attempt.c" else "attempt.cpp" });
     defer allocator.free(attempt_path);
-    const test_path = try std.fs.path.join(allocator, &.{ topic_path, "tests", "test.cpp" });
+    const test_path = try std.fs.path.join(allocator, &.{ topic_path, "tests", if (is_c) "test.c" else "test.cpp" });
     defer allocator.free(test_path);
     const build_path = try std.fs.path.join(allocator, &.{ trainer_path, "state", "build" });
     defer allocator.free(build_path);
@@ -49,18 +68,26 @@ pub fn run(
     );
     defer allocator.free(implementation_define);
 
+    const rtos_compile_path = try std.fs.path.join(allocator, &.{ trainer_path, "rtos", "compile.sh" });
+    defer allocator.free(rtos_compile_path);
+    const is_rtos = is_c and std.mem.eql(u8, attempt.category(), "systems") and std.mem.eql(u8, attempt.topic(), "rtos");
+    const compile_argv: []const []const u8 = if (is_rtos) &.{
+        "sh", rtos_compile_path, root_path, test_path, attempt_path, binary_path,
+    } else &.{
+        if (is_c) "gcc" else "g++",
+        if (is_c) "-std=c17" else "-std=c++20",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-pthread",
+        implementation_define,
+        test_path,
+        "-o",
+        binary_path,
+    };
+
     const compile = std.process.run(allocator, io, .{
-        .argv = &.{
-            "g++",
-            "-std=c++20",
-            "-Wall",
-            "-Wextra",
-            "-Wpedantic",
-            implementation_define,
-            test_path,
-            "-o",
-            binary_path,
-        },
+        .argv = compile_argv,
         .stdout_limit = .limited(256 * 1024),
         .stderr_limit = .limited(256 * 1024),
         .timeout = .{ .duration = .{ .raw = .fromSeconds(15), .clock = .awake } },
@@ -222,11 +249,11 @@ pub fn persistResult(
     const snapshots_path = try std.fs.path.join(allocator, &.{ progress_path, "attempts" });
     defer allocator.free(snapshots_path);
     try Io.Dir.cwd().createDirPath(io, snapshots_path);
-    const snapshot_filename = try std.fmt.allocPrint(allocator, "{s}.cpp", .{attempt.id()});
+    const snapshot_filename = try std.fmt.allocPrint(allocator, "{s}.{s}", .{ attempt.id(), attempt.language() });
     defer allocator.free(snapshot_filename);
     const snapshot_path = try std.fs.path.join(allocator, &.{ snapshots_path, snapshot_filename });
     defer allocator.free(snapshot_path);
-    const workspace_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", "attempt.cpp" });
+    const workspace_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", if (std.mem.eql(u8, attempt.language(), "md")) "attempt.md" else if (std.mem.eql(u8, attempt.language(), "c")) "attempt.c" else "attempt.cpp" });
     defer allocator.free(workspace_path);
     const source = try Io.Dir.cwd().readFileAlloc(io, workspace_path, allocator, .limited(1024 * 1024));
     defer allocator.free(source);
@@ -251,7 +278,7 @@ pub fn persistResult(
     try json.objectField("reference_viewed");
     try json.write(attempt.reference_viewed);
     try json.objectField("result");
-    try json.write(if (result.passed) "passed" else "failed");
+    try json.write(if (result.outcome == .self_reviewed) "self_reviewed" else if (result.passed) "passed" else "failed");
     try json.objectField("status");
     try json.write(status);
     try json.objectField("phase");
@@ -336,4 +363,36 @@ test "measured process reports runtime and peak memory" {
     try std.testing.expect(termSucceeded(result.term));
     try std.testing.expect(result.runtime_ms >= 0);
     try std.testing.expect((result.peak_memory_bytes orelse 0) > 0);
+}
+
+test "design checklist is ungraded and self-review preserves Markdown snapshots" {
+    const allocator = std.testing.allocator;
+    const io = std.testing.io;
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    const directory = "systems/programming/problems/design";
+    try tmp.dir.createDirPath(io, directory ++ "/workspace");
+    try tmp.dir.writeFile(io, .{ .sub_path = directory ++ "/workspace/attempt.md", .data = "# My design\n" });
+    try tmp.dir.writeFile(io, .{ .sub_path = directory ++ "/review.md", .data = "Manual review checklist\n" });
+    const root = try tmp.dir.realPathFileAlloc(io, ".", allocator);
+    defer allocator.free(root);
+    var store: @import("attempts.zig").Store = .{};
+    const attempt = try store.start(io, "systems", "programming", "design", "md", 900, 1500);
+    var result = try run(allocator, io, root, root, &attempt);
+    defer result.deinit(allocator);
+    try std.testing.expect(!result.passed);
+    try std.testing.expectEqual(Outcome.review_required, result.outcome);
+    try std.testing.expectEqual(Phase.review, result.phase);
+    try std.testing.expectEqualStrings("Manual review checklist\n", result.stdout);
+    result.passed = true;
+    result.outcome = .self_reviewed;
+    _ = try persistResult(allocator, io, root, &attempt, &result, 1000);
+    const snapshot = try std.fmt.allocPrint(allocator, directory ++ "/progress/attempts/{s}.md", .{attempt.id()});
+    defer allocator.free(snapshot);
+    const source = try tmp.dir.readFileAlloc(io, snapshot, allocator, .limited(1024));
+    defer allocator.free(source);
+    try std.testing.expectEqualStrings("# My design\n", source);
+    const history = try tmp.dir.readFileAlloc(io, directory ++ "/progress/attempts.ndjson", allocator, .limited(4096));
+    defer allocator.free(history);
+    try std.testing.expect(std.mem.indexOf(u8, history, "self_reviewed") != null);
 }

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Persistent Configuration Service",
+  "description": "Design atomic configuration updates, crash recovery, version migration, and truthful durability acknowledgments.",
+  "difficulty": "hard",
+  "languages": [
+    "md"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "design",
+    "self-review",
+    "linux"
+  ]
+}

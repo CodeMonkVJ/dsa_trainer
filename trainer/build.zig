@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
     });
 
     const exe = b.addExecutable(.{
-        .name = "dsa-trainer",
+        .name = "interview-trainer",
         .root_module = root_module,
         // GCC 16 emits .sframe relocations that Zig 0.16's default linker
         // cannot currently handle. Use the system linker for libc startup
@@ -24,7 +24,7 @@ pub fn build(b: *std.Build) void {
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| run_cmd.addArgs(args);
-    const run_step = b.step("run", "Run the local DSA trainer");
+    const run_step = b.step("run", "Run the local Interview Trainer");
     run_step.dependOn(&run_cmd.step);
 
     const tests = b.addTest(.{ .root_module = root_module });

@@ -3,16 +3,34 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>DSA Trainer</title>
+    <title>Interview Trainer</title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/dist/xterm.css">
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <button id="home-button" class="brand" type="button">DSA/TRAINER</button>
+        <button id="home-button" class="brand" type="button">Interview Trainer</button>
         <div id="timer" class="timer hidden">00:00</div>
       </header>
+
+      <div class="problem-filters" aria-label="Filter problems">
+        <label for="difficulty-filter">Difficulty
+          <select id="difficulty-filter">
+            <option value="all">All difficulties</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </label>
+        <label for="attempt-filter">Attempt status
+          <select id="attempt-filter">
+            <option value="all">All problems</option>
+            <option value="attempted">Attempted</option>
+            <option value="unattempted">Not attempted</option>
+          </select>
+        </label>
+      </div>
 
       <section id="dashboard-view">
         <p id="status" class="eyebrow">Loading topics…</p>

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Buffered Reader",
+  "description": "Adapt block reads to arbitrary byte reads while retaining leftovers.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

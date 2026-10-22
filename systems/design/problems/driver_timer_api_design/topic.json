@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "Driver / Timer API Design",
+  "description": "Design lifecycle and callback contracts, cancellation guarantees, error handling, and partial initialization for an asynchronous driver API.",
+  "difficulty": "hard",
+  "languages": [
+    "md"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "design",
+    "self-review"
+  ]
+}
