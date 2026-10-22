@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "Celebrity Problem",
   "description": "Find the person known by everyone who knows nobody else, if such a person exists.",
-  "difficulty": "hard",
+  "difficulty": "medium",
   "languages": ["cpp"],
   "green_seconds": 900,
   "yellow_seconds": 1500,
