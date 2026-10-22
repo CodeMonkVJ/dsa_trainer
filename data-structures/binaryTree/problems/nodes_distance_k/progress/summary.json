@@ -1,0 +1,11 @@
+{
+  "latest_attempt_id": "1790089360049819942",
+  "language": "cpp",
+  "elapsed_ms": 1975401,
+  "runtime_ms": 1,
+  "peak_memory_bytes": 3907584,
+  "passed": true,
+  "status": "red",
+  "outcome": "passed",
+  "reference_viewed": false
+}
