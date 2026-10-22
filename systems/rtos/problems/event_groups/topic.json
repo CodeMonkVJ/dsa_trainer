@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Event Groups",
+  "description": "Synchronize readiness flags with wait-any/all and clear-on-exit semantics.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

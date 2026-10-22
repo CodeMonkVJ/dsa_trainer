@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "Checked Arithmetic and Alignment",
+  "description": "Compute sizes and aligned offsets without integer overflow or partial output updates.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "systems",
+    "c",
+    "memory-and-storage"
+  ]
+}

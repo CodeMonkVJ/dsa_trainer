@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "RTOS Producer–Consumer Buffer",
+  "description": "Build a semaphore-counted bounded buffer with cooperative close and drain semantics.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

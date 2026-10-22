@@ -37,7 +37,7 @@ pub fn main(init: std.process.Init) !void {
     var http_server = try address.listen(io, .{ .reuse_address = true });
     defer http_server.deinit(io);
 
-    std.debug.print("DSA trainer: http://127.0.0.1:{d}\n", .{port});
+    std.debug.print("Interview Trainer: http://127.0.0.1:{d}\n", .{port});
     std.debug.print("DSA root: {s}\n", .{root_path});
     std.debug.print("Trainer: {s}\n", .{trainer_path});
 
@@ -188,7 +188,7 @@ fn revealReference(app: *App, request: *std.http.Server.Request, attempt_id: []c
     };
     const topic_path = try checkedProblemPath(app, attempt.category(), attempt.topic(), attempt.problem());
     defer app.allocator.free(topic_path);
-    const implementation_path = try std.fs.path.join(app.allocator, &.{ topic_path, "implementation.cpp" });
+    const implementation_path = try std.fs.path.join(app.allocator, &.{ topic_path, if (std.mem.eql(u8, attempt.language(), "md")) "implementation.md" else if (std.mem.eql(u8, attempt.language(), "c")) "implementation.c" else "implementation.cpp" });
     defer app.allocator.free(implementation_path);
     const implementation = Io.Dir.cwd().readFileAlloc(
         app.io,
@@ -203,7 +203,7 @@ fn revealReference(app: *App, request: *std.http.Server.Request, attempt_id: []c
     var json: std.json.Stringify = .{ .writer = &output.writer, .options = .{} };
     try json.beginObject();
     try json.objectField("hint");
-    try json.write("Start from the required interface in the prompt. Write down the invariant your loop or data structure must preserve, then test the smallest boundary cases before optimizing.");
+    try json.write(if (std.mem.eql(u8, attempt.language(), "md")) "State your assumptions, draw the state transitions, and trace an ownership or failure scenario through every boundary. Explain why your invariants survive shutdown or interruption." else "Start from the required interface in the prompt. Write down the invariant your loop or data structure must preserve, then test the smallest boundary cases before optimizing.");
     try json.objectField("implementation");
     try json.write(implementation);
     try json.objectField("reference_viewed");
@@ -380,16 +380,14 @@ fn startAttempt(
     var parsed = std.json.parseFromSlice(catalog.TopicMetadata, app.allocator, metadata_bytes, .{}) catch
         return respondApiError(request, .unprocessable_entity, "invalid_topic_metadata");
     defer parsed.deinit();
-    if (!containsString(parsed.value.languages, "cpp")) {
-        return respondApiError(request, .unprocessable_entity, "cpp_not_supported");
-    }
+    const language: []const u8 = if (containsString(parsed.value.languages, "md")) "md" else if (containsString(parsed.value.languages, "c")) "c" else if (containsString(parsed.value.languages, "cpp")) "cpp" else return respondApiError(request, .unprocessable_entity, "unsupported_language");
 
-    const starter_path = try std.fs.path.join(app.allocator, &.{ topic_path, "starter.cpp" });
+    const starter_path = try std.fs.path.join(app.allocator, &.{ topic_path, if (std.mem.eql(u8, language, "md")) "starter.md" else if (std.mem.eql(u8, language, "c")) "starter.c" else "starter.cpp" });
     defer app.allocator.free(starter_path);
     var previous_path: ?[]u8 = null;
     defer if (previous_path) |path| app.allocator.free(path);
     const source_path = if (source_attempt_id) |previous_id| blk: {
-        const filename = try std.fmt.allocPrint(app.allocator, "{s}.cpp", .{previous_id});
+        const filename = try std.fmt.allocPrint(app.allocator, "{s}.{s}", .{ previous_id, language });
         defer app.allocator.free(filename);
         previous_path = try std.fs.path.join(app.allocator, &.{ topic_path, "progress", "attempts", filename });
         break :blk previous_path.?;
@@ -406,16 +404,24 @@ fn startAttempt(
     const workspace_path = try std.fs.path.join(app.allocator, &.{ topic_path, "workspace" });
     defer app.allocator.free(workspace_path);
     try Io.Dir.cwd().createDirPath(app.io, workspace_path);
-    const attempt_path = try std.fs.path.join(app.allocator, &.{ workspace_path, "attempt.cpp" });
+    const attempt_path = try std.fs.path.join(app.allocator, &.{ workspace_path, if (std.mem.eql(u8, language, "md")) "attempt.md" else if (std.mem.eql(u8, language, "c")) "attempt.c" else "attempt.cpp" });
     defer app.allocator.free(attempt_path);
     try Io.Dir.cwd().writeFile(app.io, .{ .sub_path = attempt_path, .data = source });
+
+    if (std.mem.eql(u8, category_id, "systems") and std.mem.eql(u8, group_id, "rtos")) {
+        const flags_path = try std.fs.path.join(app.allocator, &.{ workspace_path, "compile_flags.txt" });
+        defer app.allocator.free(flags_path);
+        const flags = try std.fmt.allocPrint(app.allocator, "-std=c17\n-pthread\n-D_POSIX_C_SOURCE=200809L\n-I{s}/rtos\n-I{s}/third_party/freertos/include\n-I{s}/third_party/freertos/portable/ThirdParty/GCC/Posix\n", .{ app.trainer_path, app.root_path, app.root_path });
+        defer app.allocator.free(flags);
+        try Io.Dir.cwd().writeFile(app.io, .{ .sub_path = flags_path, .data = flags });
+    }
 
     const attempt = app.attempt_store.start(
         app.io,
         category_id,
         group_id,
         problem_id,
-        "cpp",
+        language,
         parsed.value.green_seconds,
         parsed.value.yellow_seconds,
     ) catch |err| switch (err) {
@@ -435,6 +441,11 @@ fn runAttempt(app: *App, request: *std.http.Server.Request, attempt_id: []const 
         return respondApiError(request, .internal_server_error, "runner_failed");
     };
     defer result.deinit(app.allocator);
+    // Saving a design records an explicit self-review, never an automated pass.
+    if (submit and std.mem.eql(u8, attempt.language(), "md")) {
+        result.passed = true;
+        result.outcome = .self_reviewed;
+    }
     const elapsed_ms = attempt.elapsedMs(app.io);
     var status: []const u8 = runner.rate(
         result.passed,
@@ -538,7 +549,8 @@ fn checkedProblemPath(app: *App, category_id: []const u8, group_id: []const u8, 
 
 fn validTopic(category_id: []const u8, topic_id: []const u8) bool {
     const category_valid = std.mem.eql(u8, category_id, "algos") or
-        std.mem.eql(u8, category_id, "data-structures");
+        std.mem.eql(u8, category_id, "data-structures") or
+        std.mem.eql(u8, category_id, "systems");
     return category_valid and catalog.validId(topic_id);
 }
 

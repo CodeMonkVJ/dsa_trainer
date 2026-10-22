@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Task Notifications",
+  "description": "Handle counting and bit notifications without confusing wakeups with payload storage.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

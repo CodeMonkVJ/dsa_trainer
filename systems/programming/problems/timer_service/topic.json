@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Timer Service",
+  "description": "Register, expire and cancel timers with explicit callback lifetime rules.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

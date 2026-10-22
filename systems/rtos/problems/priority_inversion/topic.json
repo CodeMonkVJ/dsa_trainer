@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Priority Inversion and Inheritance",
+  "description": "Demonstrate the scheduler difference between mutex ownership and binary semaphore signaling.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

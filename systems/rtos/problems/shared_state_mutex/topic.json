@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Mutex-Protected Shared State",
+  "description": "Keep a multi-field invariant valid across concurrent updates and snapshots.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}

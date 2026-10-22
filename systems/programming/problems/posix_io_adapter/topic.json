@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "POSIX I/O Adapter",
+  "description": "Handle short transfers, EINTR, EAGAIN, EOF, and absolute deadlines without losing partial progress.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "c",
+    "posix"
+  ]
+}

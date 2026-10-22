@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Local RPC Service",
+  "description": "Design a bounded Unix-domain RPC service with framing, deadlines, cancellation, retries, and safe shutdown.",
+  "difficulty": "hard",
+  "languages": [
+    "md"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "design",
+    "self-review",
+    "linux"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Message Parser",
+  "description": "Decode a framed byte stream across partial inputs with bounded lengths.",
+  "difficulty": "hard",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 900,
+  "yellow_seconds": 1500,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "name": "Arena Allocator",
+  "description": "Allocate aligned regions from caller-owned storage with bounded capacity and epoch-checked checkpoints.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "systems",
+    "c",
+    "memory-and-storage"
+  ]
+}

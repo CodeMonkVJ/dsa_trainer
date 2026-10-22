@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Ring Buffer",
+  "description": "Implement a bounded byte FIFO with wraparound and reject-on-full policy.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

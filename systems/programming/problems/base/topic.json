@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Systems Programming",
+  "description": "Implement fixed-width bit operations with checked positions and fields.",
+  "difficulty": "easy",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 300,
+  "yellow_seconds": 600,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "name": "Memory Copy and Move",
+  "description": "Copy byte ranges with explicit overlap and bounds contracts.",
+  "difficulty": "easy",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 300,
+  "yellow_seconds": 600,
+  "tags": [
+    "systems",
+    "c"
+  ]
+}

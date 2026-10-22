@@ -156,7 +156,7 @@ fn createSession(
 ) !void {
     const topic_path = try problemPath(allocator, root_path, attempt);
     defer allocator.free(topic_path);
-    const attempt_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", "attempt.cpp" });
+    const attempt_path = try std.fs.path.join(allocator, &.{ topic_path, "workspace", if (std.mem.eql(u8, attempt.language(), "md")) "attempt.md" else if (std.mem.eql(u8, attempt.language(), "c")) "attempt.c" else "attempt.cpp" });
     defer allocator.free(attempt_path);
     const guard_path = try std.fs.path.join(allocator, &.{ trainer_path, "nvim", "guard.lua" });
     defer allocator.free(guard_path);

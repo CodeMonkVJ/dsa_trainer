@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "name": "Task Scheduling and Blocking",
+  "description": "Coordinate higher- and lower-priority tasks using blocking rather than busy waiting.",
+  "difficulty": "medium",
+  "languages": [
+    "c"
+  ],
+  "green_seconds": 600,
+  "yellow_seconds": 1200,
+  "tags": [
+    "rtos",
+    "freertos",
+    "posix",
+    "x86"
+  ]
+}
