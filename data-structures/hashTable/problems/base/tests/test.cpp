@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+
 #define main dsa_reference_main
 #include DSA_IMPLEMENTATION
 #undef main
@@ -7,103 +8,408 @@ using namespace std;
 int passed = 0;
 int total = 0;
 
-void check(const char *name, const string &input, const string &expected,
-           const string &actual, bool ok) {
+void check(const char *name, bool ok) {
   ++total;
+
   if (ok)
     ++passed;
-  cout << "DSA_CASE {\"input\":" << input << ",\"expected\":" << expected
-       << ",\"actual\":" << actual << ",\"passed\":" << (ok ? "true" : "false")
+
+  cout << "DSA_CASE {\"input\":{\"case\":\"" << name
+       << "\"},\"expected\":true,\"actual\":"
+       << (ok ? "true" : "false")
+       << ",\"passed\":" << (ok ? "true" : "false")
        << "}\n";
+
   cout << (ok ? "PASS " : "FAIL ") << name << '\n';
 }
 
-string jsonBool(bool value) { return value ? "true" : "false"; }
+struct ForEachData {
+  map<string, int> values;
+  int calls = 0;
+};
+
+void collectEntry(const char *key, int value, void *userData) {
+  auto *data = static_cast<ForEachData *>(userData);
+
+  data->values[key] = value;
+  data->calls++;
+}
 
 int main() {
-
+  // ------------------------------------------------------------
+  // Initialization
+  // ------------------------------------------------------------
   HashTable table{};
-  const bool initialized = htInit(&table, 2, 0.75);
-  check("initialize table", "{\"bucket_count\":2,\"max_load_factor\":0.75}",
-        "{\"initialized\":true,\"bucket_count\":2,\"size\":0}",
-        string("{\"initialized\":") + jsonBool(initialized) +
-            ",\"bucket_count\":" + to_string(table.bucketCount) +
-            ",\"size\":" + to_string(table.size) + "}",
-        initialized);
 
-  const bool alphaInserted = htPut(&table, "alpha", 1);
-  const bool betaInserted = htPut(&table, "beta", 2);
-  const bool gammaInserted = htPut(&table, "gamma", 3);
-  check("insert and resize",
-        "{\"operations\":[[\"put\",\"alpha\",1],[\"put\",\"beta\",2],[\"put\","
-        "\"gamma\",3]]}",
-        "{\"inserted\":[true,true,true],\"size\":3,\"bucket_count\":4}",
-        string("{\"inserted\":[") + jsonBool(alphaInserted) + "," +
-            jsonBool(betaInserted) + "," + jsonBool(gammaInserted) +
-            "],\"size\":" + to_string(table.size) +
-            ",\"bucket_count\":" + to_string(table.bucketCount) + "}",
-        alphaInserted && betaInserted && gammaInserted);
-
-  int value = 0;
-  const bool foundBeta = htGet(&table, "beta", &value);
-  check("lookup value", "{\"operation\":[\"get\",\"beta\"]}",
-        "{\"found\":true,\"value\":2}",
-        string("{\"found\":") + jsonBool(foundBeta) +
-            ",\"value\":" + to_string(value) + "}",
-        foundBeta && value == 2);
-
-  const bool updatedBeta = htPut(&table, "beta", 20);
-  const bool foundUpdatedBeta = htGet(&table, "beta", &value);
-  check("update existing key",
-        "{\"operations\":[[\"put\",\"beta\",20],[\"get\",\"beta\"]]}",
-        "{\"updated\":true,\"found\":true,\"value\":20}",
-        string("{\"updated\":") + jsonBool(updatedBeta) + ",\"found\":" +
-            jsonBool(foundUpdatedBeta) + ",\"value\":" + to_string(value) + "}",
-        updatedBeta && foundUpdatedBeta && value == 20);
-
-  const bool hasAlpha = htContains(&table, "alpha");
-  const bool hasMissing = htContains(&table, "missing");
   check(
-      "contains",
-      "{\"operations\":[[\"contains\",\"alpha\"],[\"contains\",\"missing\"]]}",
-      "{\"contains\":[true,false]}",
-      string("{\"contains\":[") + jsonBool(hasAlpha) + "," +
-          jsonBool(hasMissing) + "]}",
-      hasAlpha && !hasMissing);
+      "initialize table",
+      htInit(&table, 2, 0.75) &&
+          table.buckets != nullptr &&
+          table.bucketCount == 2 &&
+          table.size == 0 &&
+          table.maxLoadFactor == 0.75);
 
-  const bool removedAlpha = htRemove(&table, "alpha");
-  const bool alphaAfterRemove = htContains(&table, "alpha");
-  const bool removedAlphaAgain = htRemove(&table, "alpha");
-  check("remove",
-        "{\"operations\":[[\"remove\",\"alpha\"],[\"contains\",\"alpha\"],["
-        "\"remove\",\"alpha\"]]}",
-        "{\"removed\":true,\"contains_after\":false,\"removed_again\":false}",
-        string("{\"removed\":") + jsonBool(removedAlpha) +
-            ",\"contains_after\":" + jsonBool(alphaAfterRemove) +
-            ",\"removed_again\":" + jsonBool(removedAlphaAgain) + "}",
-        removedAlpha && !alphaAfterRemove && !removedAlphaAgain);
+  check(
+      "initial load factor zero",
+      htLoadFactor(&table) == 0.0);
 
-  size_t longest = 0;
-  size_t empty = 0;
-  const size_t nonEmpty = htBucketStats(&table, &longest, &empty);
-  const double loadFactor = htLoadFactor(&table);
-  check("bucket statistics", "{\"operation\":\"bucket_stats\"}",
-        "{\"non_empty\":2,\"longest\":1,\"empty\":2,\"load_factor\":0.5}",
-        string("{\"non_empty\":") + to_string(nonEmpty) + ",\"longest\":" +
-            to_string(longest) + ",\"empty\":" + to_string(empty) +
-            ",\"load_factor\":" + to_string(loadFactor) + "}",
-        nonEmpty > 0 && loadFactor > 0);
+  check(
+      "missing key in empty table",
+      !htContains(&table, "missing"));
 
+  {
+    int value = 123;
+
+    check(
+        "get missing key",
+        !htGet(&table, "missing", &value));
+  }
+
+  check(
+      "remove missing key",
+      !htRemove(&table, "missing") &&
+          table.size == 0);
+
+  // ------------------------------------------------------------
+  // Basic insertion
+  // ------------------------------------------------------------
+  check(
+      "insert alpha",
+      htPut(&table, "alpha", 1) &&
+          table.size == 1 &&
+          htContains(&table, "alpha"));
+
+  {
+    int value = 0;
+
+    check(
+        "get alpha",
+        htGet(&table, "alpha", &value) &&
+            value == 1);
+  }
+
+  // ------------------------------------------------------------
+  // Updating existing key should NOT increase size
+  // ------------------------------------------------------------
+  {
+    size_t oldSize = table.size;
+    size_t oldBucketCount = table.bucketCount;
+
+    bool updated = htPut(&table, "alpha", 99);
+
+    int value = 0;
+    bool found = htGet(&table, "alpha", &value);
+
+    check(
+        "update existing key",
+        updated &&
+            found &&
+            value == 99 &&
+            table.size == oldSize &&
+            table.bucketCount == oldBucketCount);
+  }
+
+  // ------------------------------------------------------------
+  // Resize
+  //
+  // Initial capacity 2, max LF .75.
+  // Inserting a second unique element would produce load 1.0,
+  // so table should grow.
+  // ------------------------------------------------------------
+  {
+    bool inserted = htPut(&table, "beta", 2);
+
+    check(
+        "resize on load factor",
+        inserted &&
+            table.size == 2 &&
+            table.bucketCount > 2);
+  }
+
+  {
+    int alpha = 0;
+    int beta = 0;
+
+    check(
+        "entries survive resize",
+        htGet(&table, "alpha", &alpha) &&
+            htGet(&table, "beta", &beta) &&
+            alpha == 99 &&
+            beta == 2);
+  }
+
+  check(
+      "insert after resize",
+      htPut(&table, "gamma", 3) &&
+          table.size == 3);
+
+  // ------------------------------------------------------------
+  // Independent key ownership
+  //
+  // The table must copy the key rather than storing caller memory.
+  // ------------------------------------------------------------
+  {
+    char key[] = "mutable";
+
+    check(
+        "insert mutable key",
+        htPut(&table, key, 77));
+
+    key[0] = 'X';
+
+    int value = 0;
+
+    check(
+        "owns independent key copy",
+        htGet(&table, "mutable", &value) &&
+            value == 77 &&
+            !htContains(&table, "Xutable"));
+  }
+
+  // ------------------------------------------------------------
+  // ForEach
+  // ------------------------------------------------------------
+  {
+    ForEachData data;
+
+    htForEach(&table, collectEntry, &data);
+
+    check(
+        "foreach visits every entry exactly once",
+        data.calls == static_cast<int>(table.size) &&
+            data.values.size() == table.size &&
+            data.values["alpha"] == 99 &&
+            data.values["beta"] == 2 &&
+            data.values["gamma"] == 3 &&
+            data.values["mutable"] == 77);
+  }
+
+  // ------------------------------------------------------------
+  // Load factor
+  // ------------------------------------------------------------
+  {
+    double expected =
+        static_cast<double>(table.size) /
+        static_cast<double>(table.bucketCount);
+
+    check(
+        "load factor exact",
+        abs(htLoadFactor(&table) - expected) < 1e-12);
+  }
+
+  // ------------------------------------------------------------
+  // Bucket statistics
+  // ------------------------------------------------------------
+  {
+    size_t longest = 0;
+    size_t empty = 0;
+
+    size_t nonEmpty =
+        htBucketStats(&table, &longest, &empty);
+
+    check(
+        "bucket statistics internally consistent",
+        nonEmpty + empty == table.bucketCount &&
+            nonEmpty <= table.size &&
+            longest >= 1 &&
+            longest <= table.size);
+  }
+
+  // ------------------------------------------------------------
+  // Remove existing key
+  // ------------------------------------------------------------
+  {
+    size_t before = table.size;
+
+    bool removed = htRemove(&table, "beta");
+
+    check(
+        "remove existing key",
+        removed &&
+            table.size == before - 1 &&
+            !htContains(&table, "beta"));
+  }
+
+  {
+    int value = 0;
+
+    check(
+        "removed key cannot be retrieved",
+        !htGet(&table, "beta", &value));
+  }
+
+  check(
+      "remove same key twice",
+      !htRemove(&table, "beta"));
+
+  // Other entries must remain intact.
+  {
+    int alpha = 0;
+    int gamma = 0;
+
+    check(
+        "remove does not damage other entries",
+        htGet(&table, "alpha", &alpha) &&
+            htGet(&table, "gamma", &gamma) &&
+            alpha == 99 &&
+            gamma == 3);
+  }
+
+  // ------------------------------------------------------------
+  // Collision-heavy table
+  //
+  // Use one bucket and a very high load factor so every entry
+  // necessarily lands in the same chain without resizing.
+  // ------------------------------------------------------------
+  {
+    HashTable collisions{};
+
+    bool init = htInit(&collisions, 1, 100.0);
+
+    bool a = htPut(&collisions, "one", 1);
+    bool b = htPut(&collisions, "two", 2);
+    bool c = htPut(&collisions, "three", 3);
+    bool d = htPut(&collisions, "four", 4);
+
+    check(
+        "separate chaining collisions",
+        init &&
+            a && b && c && d &&
+            collisions.size == 4);
+
+    int one = 0, two = 0, three = 0, four = 0;
+
+    check(
+        "lookup through collision chain",
+        htGet(&collisions, "one", &one) &&
+            htGet(&collisions, "two", &two) &&
+            htGet(&collisions, "three", &three) &&
+            htGet(&collisions, "four", &four) &&
+            one == 1 &&
+            two == 2 &&
+            three == 3 &&
+            four == 4);
+
+    {
+      size_t longest = 0;
+      size_t empty = 0;
+
+      size_t nonEmpty =
+          htBucketStats(&collisions, &longest, &empty);
+
+      check(
+          "collision bucket statistics",
+          nonEmpty == 1 &&
+              longest == 4 &&
+              empty == 0);
+    }
+
+    // All four nodes are in one linked list.
+    // This exercises unlinking somewhere in that chain.
+    check(
+        "remove from collision chain",
+        htRemove(&collisions, "two") &&
+            !htContains(&collisions, "two") &&
+            collisions.size == 3 &&
+            htContains(&collisions, "one") &&
+            htContains(&collisions, "three") &&
+            htContains(&collisions, "four"));
+
+    check(
+        "remove more collision entries",
+        htRemove(&collisions, "four") &&
+            htRemove(&collisions, "one") &&
+            htRemove(&collisions, "three") &&
+            collisions.size == 0);
+
+    {
+      size_t longest = 999;
+      size_t empty = 999;
+
+      size_t nonEmpty =
+          htBucketStats(&collisions, &longest, &empty);
+
+      check(
+          "empty bucket stats after removals",
+          nonEmpty == 0 &&
+              longest == 0 &&
+              empty == collisions.bucketCount);
+    }
+
+    htClear(&collisions);
+
+    check(
+        "clear collision table",
+        collisions.buckets == nullptr &&
+            collisions.size == 0);
+  }
+
+  // ------------------------------------------------------------
+  // Many inserts / repeated resizing
+  // ------------------------------------------------------------
+  {
+    HashTable large{};
+
+    bool init = htInit(&large, 2, 0.75);
+    bool allInserted = init;
+
+    const int count = 100;
+
+    for (int i = 0; i < count; ++i) {
+      string key = "key_" + to_string(i);
+
+      if (!htPut(&large, key.c_str(), i * 10)) {
+        allInserted = false;
+        break;
+      }
+    }
+
+    bool allFound = true;
+
+    for (int i = 0; i < count; ++i) {
+      string key = "key_" + to_string(i);
+      int value = -1;
+
+      if (!htGet(&large, key.c_str(), &value) ||
+          value != i * 10) {
+        allFound = false;
+        break;
+      }
+    }
+
+    check(
+        "many inserts survive repeated resizing",
+        allInserted &&
+            allFound &&
+            large.size == count &&
+            large.bucketCount > 2);
+
+    htClear(&large);
+  }
+
+  // ------------------------------------------------------------
+  // Clear
+  // ------------------------------------------------------------
   htClear(&table);
-  const bool cleared = table.buckets == nullptr && table.size == 0;
-  check("clear and ownership", "{\"operation\":\"clear\"}",
-        "{\"buckets\":null,\"size\":0}",
-        string("{\"buckets\":") +
-            (table.buckets == nullptr ? "null" : "present") +
-            ",\"size\":" + to_string(table.size) + "}",
-        cleared);
 
-  cout << "DSA_RESULT {\"passed\":" << passed << ",\"total\":" << total
+  check(
+      "clear resets table",
+      table.buckets == nullptr &&
+          table.size == 0);
+
+  // Ideally clear should also be safe when called again.
+  htClear(&table);
+
+  check(
+      "clear is idempotent",
+      table.buckets == nullptr &&
+          table.size == 0);
+
+  cout << "DSA_RESULT {\"passed\":"
+       << passed
+       << ",\"total\":"
+       << total
        << "}\n";
+
   return passed == total ? 0 : 1;
 }

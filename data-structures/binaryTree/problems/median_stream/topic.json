@@ -1,1 +1,0 @@
-{"schema_version":1,"name":"Find Median in a Running Stream","description":"Maintain the median while integers arrive one at a time.","difficulty":"hard","languages":["cpp"],"green_seconds":900,"yellow_seconds":1500,"tags":["heaps","stream","median"]}

@@ -2,7 +2,7 @@
   "schema_version": 1,
   "name": "Flatten Linked List",
   "description": "Flatten a linked list whose nodes have a next chain and sorted bottom chains into one sorted bottom chain.",
-  "difficulty": "hard",
+  "difficulty": "medium",
   "languages": ["cpp"],
   "green_seconds": 900,
   "yellow_seconds": 1500,
